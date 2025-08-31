@@ -11,8 +11,10 @@ def create_app():
     # Register API blueprints
     from .api import meta
     from .api import user
+    from .api import stats
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
+    app.register_blueprint(stats.bp)
 
     # Initialize database connection handling
     from .core import db
