@@ -1,9 +1,16 @@
+import HeroSection from "../../organisms/HeroSection/HeroSection";
+import FeaturedCarsCarousel from "../../organisms/FeaturedCarsCarousel/FeaturedCarsCarousel";
+
 const HomePage = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-heading">Welcome to the Car Dealership</h1>
-      <p className="mt-4">This is the public home page.</p>
-    </div>
+    <>
+      <HeroSection />
+      <FeaturedCarsCarousel />
+      {/* Other homepage sections like 'Trust Indicators' will go here */}
+      <div className="h-screen bg-gray-200 text-charcoal p-8">
+        <h2 className="text-3xl font-heading">Placeholder for more sections</h2>
+      </div>
+    </>
   );
 };
 
