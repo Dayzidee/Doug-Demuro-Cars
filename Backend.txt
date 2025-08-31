@@ -1,0 +1,499 @@
+MASTER BACKEND PROMPT — Car Dealership (Flask + Supabase)
+
+Role & Constraints
+You are a Senior Backend Engineer building a production-grade backend for a car dealership website.
+Stack: Python 3.11, Flask (Blueprints), Supabase (Postgres + Auth + Storage + Realtime + SQL Migrations), supabase-py, Gunicorn, Docker.
+Infra add-ons: Redis (cache + rate limits), Celery (background jobs) with Redis broker, Sentry (errors), OpenTelemetry (traces), pytest (tests), Alembic or Supabase SQL migrations (prefer Supabase migrations for RLS).
+Principles: secure by default, least privilege, RLS-first, idempotent APIs, observability, testability, and clear OpenAPI 3.1 docs.
+
+0) Outcomes
+
+Ship a fully documented REST API (OpenAPI + Swagger UI) that maps 1:1 to all frontend flows below.
+
+Use Supabase Auth for user/role management and RLS policies for data access.
+
+Store media (vehicle photos, 360s, videos) in Supabase Storage with signed URLs.
+
+Emit domain events (price_drop, new_listing, booking_created, application_status_changed) to a lightweight event bus (Redis Pub/Sub) for notifications & analytics.
+
+Provide seed data + Postman collection.
+
+1) Frontend → Backend Capability Map (must implement)
+
+Implement endpoints, models, and logic to power each numbered UI feature:
+
+Brand Identity
+
+No backend object required; expose /meta/health, /meta/config returning brand/theme toggles (light/dark defaults), supported locales.
+
+Color Scheme & Typography
+
+Delivered as /meta/config.
+
+Homepage
+
+/inventory/featured (curated, sortable), /stats/summary (cars sold, avg rating), /search/suggestions (make/model/year/price ranges).
+
+Search + Filters (Inventory Page)
+
+/inventory/search with filters: make, model, year[min,max], price[min,max], mileage, fuel, color, body_type, transmission, location_id, sort, page, page_size.
+
+Response: paginated, with facets (counts per filter) + total.
+
+Car Cards
+
+Model exposes price (current + previous), hero media signed URLs, quick specs, is_new, is_certified, is_special.
+
+Vehicle Detail Page (VDP)
+
+/vehicles/{id} full payload: specs, media (images, 360, video URLs), price history, reviews, similar_vehicles, financing options, availability schedule.
+
+/tools/monthly-estimate calculator endpoint.
+
+/tradein/estimate RPC (see §12).
+
+Financing & Trade-In
+
+/financing/applications (CRUD by owner; admin list/filter), status transitions, document uploads.
+
+/tools/payment-calc (pure function).
+
+/tradein/requests create + status; optional third-party valuation webhook receiver.
+
+Service & Parts
+
+/service/appointments (book, reschedule, cancel) + availability.
+
+/parts/catalog (search, filter, paginate) + /parts/orders (cart/checkout-lite).
+
+/service/packages tiered offerings.
+
+New / CPO / Specials
+
+/inventory/new, /inventory/cpo, /inventory/specials.
+
+About / Team / Trust
+
+/content/about, /content/team, /content/awards (CMS-lite tables).
+
+Blog / Resources
+
+/blog/posts (list, detail, categories, tags), markdown storage, scheduled publish.
+
+Contact & Locations
+
+/locations (multi-branch), /contact/lead (creates CRM lead), /livechat/token (for Realtime channel join).
+
+Customer Account / Dashboard
+
+/me (profile), /me/saved-cars, /me/applications, /me/appointments, /me/notifications.
+
+Interactive Tools
+
+/compare (create list, add/remove vehicles), /virtualtour/assets (signed URLs), /delivery/quote placeholder.
+
+Navigation System
+
+Provide /meta/sitemaps (URLs), /meta/menu for dynamic nav configuration.
+
+Animations & Transitions
+
+Not backend; ensure low-latency endpoints (<200ms P95 via caching/indexes).
+
+Micro-Interactions
+
+/telemetry/interaction events for A/B and UX metrics.
+
+Mobile Experience
+
+All endpoints must support compact responses with ?view=compact.
+
+Trust & Conversion
+
+/reviews (vehicle + dealership), /badges, /nudges (e.g., “3 people viewed”).
+
+Gamification
+
+/rewards (earnings), /badges, /campaigns/test-drive-voucher.
+
+Accessibility & SEO
+
+/meta/seo per route (title/description/canonical/structured data JSON-LD).
+
+2) Data Model (Supabase Postgres) — core tables (add FKs, indexes, RLS)
+
+Create normalized tables with UUID PKs:
+
+profiles(id, email, full_name, phone, role enum['customer','staff','admin'], created_at)
+
+locations(id, name, address, city, state, country, lat, lng, phone, whatsapp, hours_json, created_at)
+
+vehicles(id, vin unique, stock_no, make, model, trim, year int, body_type, color_ext, color_int, mileage int, fuel, transmission, drivetrain, doors, seats, condition enum['new','used','cpo'], is_special bool, location_id fk, price_current numeric, price_list numeric, visible bool, created_at)
+
+vehicle_specs(vehicle_id fk, key, value) (or JSONB specs)
+
+vehicle_media(id, vehicle_id fk, kind enum['image','video','spin360'], path, position int, created_at)
+
+price_history(id, vehicle_id fk, price numeric, recorded_at)
+
+reviews(id, target_type enum['vehicle','dealership'], target_id, user_id fk, rating int check 1..5, title, body, created_at)
+
+saved_cars(user_id fk, vehicle_id fk, created_at, unique(user_id,vehicle_id))
+
+compare_lists(id, user_id fk, name, created_at) & compare_list_items(list_id fk, vehicle_id fk)
+
+financing_applications(id, user_id fk, vehicle_id fk, status enum['draft','submitted','under_review','approved','rejected','cancelled'], amount numeric, term_months int, apr numeric, down_payment numeric, employer, monthly_income numeric, documents jsonb, notes text, created_at, updated_at)
+
+tradein_requests(id, user_id fk, vehicle_id fk null, make, model, year int, mileage int, condition_grade int, photos jsonb, est_value_low numeric, est_value_high numeric, status enum['submitted','awaiting_inspection','quoted','accepted','declined'], created_at)
+
+service_appointments(id, user_id fk, location_id fk, service_type, package_id fk null, vehicle_vin, desired_at timestamptz, status enum['booked','rescheduled','completed','cancelled'], notes, created_at)
+
+service_packages(id, title, description, price numeric, duration_min int, created_at)
+
+parts(id, sku unique, name, description, price numeric, stock int, category_id fk, media jsonb, compatible_makes jsonb, created_at)
+
+part_categories(id, name, parent_id fk null)
+
+part_orders(id, user_id fk, status enum['cart','placed','paid','shipped','cancelled'], total numeric, created_at) & part_order_items(order_id fk, part_id fk, qty int, price_each numeric)
+
+blog_posts(id, slug unique, title, excerpt, body_md, hero_path, author_id fk, status enum['draft','published','scheduled'], published_at, categories text[], tags text[], created_at, updated_at)
+
+offers(id, title, description, starts_at, ends_at, terms_md, active bool)
+
+notifications(id, user_id fk, kind, payload jsonb, read_at)
+
+analytics_events(id, user_id fk null, name, payload jsonb, occurred_at)
+
+audit_log(id, actor_user_id fk null, action, resource_table, resource_id, before jsonb, after jsonb, ip, ua, occurred_at)
+
+Indexes: composite on vehicles(make, model, year), GIN on vehicles -> specs if JSONB, trigram on text search fields, btree on price_current, visible, location_id.
+RLS:
+
+profiles: users can select self; staff/admin can list.
+
+vehicles: public select where visible=true; staff/admin full.
+
+financing_applications, tradein_requests, saved_cars, compare_lists, service_appointments, part_orders, notifications: owner can CRUD their rows; staff/admin per business rules.
+
+3) AuthN/AuthZ
+
+Use Supabase Auth (email/password + OAuth providers if needed).
+
+Verify JWTs in Flask via Supabase JWKS; inject req.user (id, role).
+
+Roles: anonymous, customer, staff, admin.
+
+Admin operations require role in ('staff','admin') + IP allowlist for sensitive routes.
+
+Support Magic Link login & passwordless optional.
+
+4) API Design (Blueprints & Endpoints)
+
+Create Flask blueprints:
+
+auth: /auth/login, /auth/logout, /auth/refresh, /auth/me (proxy to Supabase where possible).
+
+meta: /meta/health, /meta/config, /meta/menu, /meta/seo, /meta/sitemaps.
+
+inventory: /inventory/search, /inventory/featured, /inventory/new, /inventory/cpo, /inventory/specials.
+
+vehicles: GET /vehicles/{id}, GET /vehicles/{id}/media, GET /vehicles/{id}/similar, GET /vehicles/{id}/price-history.
+
+tools: /tools/payment-calc, /tools/monthly-estimate, /tools/tradein/quick-estimate.
+
+tradein: POST /tradein/requests, GET /tradein/requests/{id}, admin list/update.
+
+financing: POST /financing/applications, GET /financing/applications/{id}, PATCH status, admin list/filter/export CSV.
+
+service: /service/appointments (CRUD), /service/packages.
+
+parts: /parts/catalog, /parts/{id}, /parts/orders (cart→checkout), webhooks /webhooks/payment.
+
+content: /content/about, /content/team, /content/awards, /blog/posts, /blog/{slug}.
+
+locations: /locations, /locations/{id}.
+
+user: /me, /me/saved-cars (POST/DELETE), /me/compare-lists, /me/notifications.
+
+reviews: /reviews (create/list), moderate (staff).
+
+offers: /offers (public list, admin CRUD).
+
+chat: /livechat/token (returns Supabase Realtime channel token).
+
+analytics: /telemetry/interaction, /analytics/dash (staff).
+
+admin: bulk upload vehicles (CSV), media ingest, SEO fields, feature flags.
+
+Standards
+
+JSON:API-like responses with data, meta, links.
+
+Pagination: page, page_size (max 100).
+
+Sorting: sort=price_current:asc,year:desc.
+
+Filtering via query params (snake_case).
+
+ETags for caching; support If-None-Match.
+
+Rate limits: anonymous 60 rpm, authenticated 300 rpm (per IP + user).
+
+Idempotency-Key header for POST that can be retried.
+
+5) Storage & Media
+
+Buckets: vehicle-media, blog-hero, docs, parts-media.
+
+Private by default; serve via signed URLs (5–15 min TTL).
+
+Image variants (thumb, card, hero) generated by an Edge Function or Celery task; store paths in vehicle_media.
+
+6) Search & Performance
+
+Use Postgres Full-Text + pg_trgm for fuzzy make/model search.
+
+Faceted counts via SQL GROUPing, cached 60s in Redis.
+
+Heavy endpoints cached (keyed by normalized query).
+
+Add covering indexes for primary filter columns.
+
+P95 < 200ms for search on warm cache.
+
+7) Background Jobs (Celery)
+
+send_email_sms (status updates, reminders, price alerts).
+
+rebuild_sitemaps, refresh_facets, recompute_nudges (views counts).
+
+process_media (optimize, generate 360 poster frames).
+
+export_financing_csv (admin).
+
+Schedule via Celery beat: hourly/daily tasks.
+
+8) Notifications
+
+Table-driven; emit on events: application status change, appointment reminders, price drops, new specials, blog publish.
+
+Channels: email (e.g., Resend/SendGrid), SMS (Twilio), in-app (notifications table), optional WhatsApp Business.
+
+Allow user preferences (/me/settings/notifications).
+
+9) Security
+
+Verify Supabase JWT on every request; map sub -> profiles.id.
+
+Enforce RLS everywhere; use supabase-py to preserve RLS context.
+
+Validate payloads with Pydantic models; reject unknown fields.
+
+CORS: allow only frontend origins; cookies SameSite=Lax, secure.
+
+CSRF for cookie-based flows; otherwise Bearer tokens.
+
+Secrets only via environment; no secrets in code.
+
+File uploads: content-type allowlist, max sizes, virus scan hook (optional).
+
+Admin actions logged in audit_log.
+
+Basic WAF rules (regex-block, size limits).
+
+GDPR requests endpoints /privacy/data-export, /privacy/delete.
+
+10) Observability
+
+OpenTelemetry (Flask, Postgres, Redis), trace IDs in logs.
+
+Sentry with release tags + environment.
+
+Access logs (JSON), request IDs, response times, cache hits.
+
+Health: /meta/health checks DB, Redis, Storage.
+
+11) OpenAPI & DX
+
+Auto-generate OpenAPI 3.1 from decorators or Pydantic models.
+
+Serve Swagger UI at /docs, redoc at /redoc.
+
+Provide Postman collection + example cURL in README.
+
+Enforce strict typing, 100% schema coverage, examples for every route.
+
+12) Domain Logic Snippets (high level)
+
+Monthly Estimate = amortization formula using price_current, down payment, APR, term.
+
+Trade-in Quick Estimate = rules table by make/model/year/mileage/condition ± market index (configurable), returns [low, high].
+
+Similar Vehicles = cosine similarity on (price, year, body_type, make/model embeddings) or simple rules + indexed query.
+
+13) Migrations & RLS
+
+Deliver SQL migration files compatible with Supabase CLI.
+
+For each table: enable row level security; and policies such as:
+
+Public read on vehicles where visible = true.
+
+Owner read/write on user-owned tables: auth.uid() = user_id.
+
+Staff/admin bypass with exists(select 1 from profiles p where p.id = auth.uid() and p.role in ('staff','admin')).
+
+14) Example Endpoint Contracts (concise)
+GET /inventory/search
+
+Query: make, model, year_min, year_max, price_min, price_max, mileage_max, fuel, transmission, color, location_id, sort, page, page_size, view
+200 Response:
+
+{
+  "data": [
+    {
+      "id": "uuid",
+      "title": "2019 Toyota Camry SE",
+      "price_current": 19500,
+      "price_list": 20999,
+      "year": 2019,
+      "mileage": 42000,
+      "fuel": "petrol",
+      "transmission": "automatic",
+      "media_hero_url": "https://signed-url",
+      "badges": ["CPO","Special"],
+      "location": {"id":"...","city":"..."}
+    }
+  ],
+  "meta": {"total": 124, "page": 1, "page_size": 20, "facets": {"make":{"Toyota":42,"Honda":38}}},
+  "links": {"next": "...?page=2"}
+}
+
+POST /financing/applications
+
+Auth required. Idempotent via header.
+Body: user + vehicle + financials. Returns status='submitted'.
+
+POST /tradein/requests
+
+Uploads photos to signed URLs; returns quick estimate [low, high] when possible.
+
+15) Caching & Rate Limiting
+
+Global limiter (Flask-Limiter + Redis):
+
+anonymous: 60/min, auth: 300/min, per route overrides for /search and /vehicles/{id}.
+
+Cache layer:
+
+Search results 60s, vehicle detail 120s, blog lists 300s, facets 60s.
+
+16) Admin & Content Ops
+
+Admin endpoints behind role in ('staff','admin') + IP allowlist + 2FA prompt.
+
+Bulk import vehicles from CSV: validates schema, upserts by vin/stock_no, processes media.
+
+Blog CMS-lite: markdown body, scheduled publish via Celery.
+
+17) Testing
+
+Unit + integration (pytest) with ephemeral Supabase schema or test db.
+
+Contract tests from OpenAPI examples.
+
+Load tests (k6 or Locust) target P95 SLA.
+
+18) Deployment
+
+Dockerfile (multi-stage) → Gunicorn.
+
+Env via .env (see below).
+
+Runbooks for migrations & rollbacks.
+
+Blue-green or canary deploys; health checks.
+
+19) Environment Variables (minimum)
+FLASK_ENV=production
+PORT=8080
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=   # server-only
+SUPABASE_JWT_AUDIENCE=
+SUPABASE_JWKS_URL=
+DATABASE_URL=                # Supabase Postgres connection (service-only tasks)
+REDIS_URL=
+SENTRY_DSN=
+ALLOWED_ORIGINS=https://www.example.com,https://staging.example.com
+FILE_MAX_MB=15
+PAYMENT_WEBHOOK_SECRET=
+
+20) Project Layout
+/app
+  /api
+    __init__.py
+    meta.py, auth.py, inventory.py, vehicles.py, tools.py, tradein.py, financing.py,
+    service.py, parts.py, content.py, locations.py, user.py, reviews.py, offers.py, chat.py, analytics.py, admin.py
+  /core
+    config.py, security.py, db.py (supabase client), cache.py, deps.py, telemetry.py
+  /models
+    schemas.py (Pydantic), validators.py
+  /jobs
+    tasks.py, schedules.py
+  /services
+    payments.py, notifications.py, media.py, similarity.py, estimates.py
+  /migrations
+    /supabase/*.sql
+  main.py
+/docs
+  openapi.yaml
+/tests
+  test_*.py
+Dockerfile
+docker-compose.yml
+README.md
+
+21) Deliverables
+
+Complete Flask app with blueprints, Pydantic schemas, and supabase-py DAO layer (preserving RLS).
+
+SQL migrations (tables, indexes, RLS policies, seed data).
+
+OpenAPI 3.1 spec + Swagger UI, Postman collection.
+
+Seed/fixtures for inventory, parts, blog, offers, users.
+
+Admin CSV importer + sample CSV.
+
+CI checks: lint, type-check, tests, security scan (bandit).
+
+Runbook for env setup & first deploy.
+
+22) Acceptance Criteria
+
+All endpoints return within <200ms P95 on warm cache, <500ms P95 cold.
+
+Search scales to 100k+ vehicles with proper indexes.
+
+RLS prevents cross-tenant data leaks; all owner data protected.
+
+File links are signed; no public PII anywhere.
+
+OpenAPI validated; 95%+ test coverage on domain logic.
+
+Zero high-severity SAST/DAST findings.
+
+Notes for the code generator
+
+Prefer supabase-py over raw psycopg to preserve RLS & Auth context.
+
+Attach user JWT to supabase-py client per request.
+
+For admin/batch jobs, use service role key server-side only.
+
+Use Pydantic for request/response validation.
+
+Implement Idempotency-Key middleware, Request-ID, and ETag helpers.
+
+Add view=compact transformer to trim payloads for mobile.

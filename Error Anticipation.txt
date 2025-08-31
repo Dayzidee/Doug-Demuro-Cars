@@ -1,0 +1,173 @@
+MASTER PROMPT — Anticipating Complications & Fixes (Car Dealership Website)
+
+Role: You are a Principal Backend + Full-Stack Architect with foresight into typical frontend/backend build challenges. Your task is to predict the stumbling blocks likely to occur while building a Flask + Supabase backend for the Car Dealership Website described earlier, with a premium UI/UX frontend.
+For every problem, you must provide solutions, best practices, and prevention strategies so the project never stalls.
+
+1. Frontend ↔ Backend API Contract Drift
+
+Problem: Frontend needs evolve faster than backend schemas, causing mismatches (missing fields, renamed attributes, breaking API changes).
+Fix:
+
+Define OpenAPI spec first and auto-generate client SDKs for frontend.
+
+Add contract tests to ensure API and frontend expectations stay aligned.
+
+Use versioned APIs (/v1, /v2) to avoid breaking production users.
+
+2. Authentication & Authorization Confusion
+
+Problem: Supabase Auth JWTs vs Flask session cookies; RLS policies can silently block data → confusing errors.
+Fix:
+
+Centralize auth in middleware: every request attaches Supabase JWT → req.user.
+
+Maintain a role matrix (anonymous, customer, staff, admin) mapped to each endpoint.
+
+Use Supabase Row-Level Security + unit tests to ensure correct policy enforcement.
+
+3. Data Modeling Pitfalls
+
+Problem: Vehicles, trade-ins, financing, parts, and services all interact → schema sprawl and join complexity → slow queries.
+Fix:
+
+Normalize tables but use JSONB for highly variable specs (e.g., vehicle_specs).
+
+Add indexes upfront on hot query fields (make, model, year, price).
+
+Run query explain plans early with 10k+ seed rows to simulate real load.
+
+4. File & Media Handling
+
+Problem: Car images, 360° spins, and videos are large → risk of broken links, slow loads, or expensive bandwidth.
+Fix:
+
+Store in Supabase Storage private buckets with signed URLs (short TTL).
+
+Generate thumbnails + compressed versions via Celery task or Supabase Edge Functions.
+
+Add fallback placeholders in frontend if media fails.
+
+5. Search & Filtering Performance
+
+Problem: Vehicle search with multiple filters can degrade badly as inventory grows.
+Fix:
+
+Use Postgres full-text search + trigram indexes for make/model queries.
+
+Cache results (Redis) with normalized query keys.
+
+Paginate strictly (limit 20) and return only essentials; load details lazily.
+
+6. Financing & Trade-In Logic Complexity
+
+Problem: Edge cases (APR rounding errors, trade-in valuation disputes).
+Fix:
+
+Abstract calculations into pure, tested service functions (Pydantic models).
+
+Log every calculation step in audit tables.
+
+Keep configurable rate tables in DB so admins can adjust without redeploy.
+
+7. Concurrency & State Conflicts
+
+Problem: Users may book the same car/service slot simultaneously.
+Fix:
+
+Use transactional row-level locks in Postgres for bookings.
+
+Double-check availability before confirming.
+
+Expose “optimistic locking” with ETag/If-Match headers for updates.
+
+8. Scalability Bottlenecks
+
+Problem: Flask single-thread bottleneck; Supabase query latency under load.
+Fix:
+
+Deploy via Gunicorn + async workers.
+
+Add Redis caching for expensive endpoints.
+
+Horizontally scale Flask containers + Supabase read replicas if needed.
+
+9. Security Holes
+
+Problem: File uploads, SQL injection, insecure direct object references (IDOR).
+Fix:
+
+Validate everything with Pydantic schemas.
+
+Use Supabase RLS → no raw table access bypass.
+
+Serve signed URLs only for media.
+
+Add rate limits for login, search, file upload.
+
+Centralize logging in audit_log table for traceability.
+
+10. Error Handling & Debugging
+
+Problem: Silent failures (Supabase policy denies access, but looks like 404).
+Fix:
+
+Differentiate errors (403 vs 404) with descriptive messages.
+
+Attach trace IDs to all logs.
+
+Integrate Sentry for real-time alerting.
+
+11. Frontend Integration Issues
+
+Problem: Animations, transitions, and micro-interactions demand real-time data (e.g., “3 people viewed this car today”). Backend might lag.
+Fix:
+
+Use Supabase Realtime channels for live counters.
+
+Fallback → poll /telemetry/views every 30s if WebSocket fails.
+
+12. Testing Gaps
+
+Problem: Features “work locally” but fail in staging/prod due to auth/caching.
+Fix:
+
+Maintain ephemeral test environments with seeded Supabase data.
+
+Run contract tests from OpenAPI spec.
+
+Load test /inventory/search with 100k vehicles before launch.
+
+13. SEO & Caching Conflicts
+
+Problem: SEO needs server-rendered metadata, but caching may serve stale content.
+Fix:
+
+Serve SEO metadata from /meta/seo with short cache TTL (60s).
+
+For blog + specials, invalidate cache on publish/update via Celery task.
+
+14. Team & Process Issues
+
+Problem: Frontend devs block on backend not ready; backend blocked on unclear UX.
+Fix:
+
+Ship mock APIs early (static JSON with OpenAPI).
+
+Use feature flags for unfinished endpoints.
+
+Continuous deployment with staging site linked to main branch.
+
+15. Deployment & Environment Drift
+
+Problem: Different configs in dev, staging, prod cause hard-to-reproduce bugs.
+Fix:
+
+Use Docker Compose for local dev with Supabase CLI.
+
+Keep .env.example always updated.
+
+Run migrations automatically on deploy with rollback plan.
+
+Final Instruction to Generator/Team
+
+For every feature in frontend design → map backend API. For every backend API → anticipate failure points (auth, perf, concurrency, UX mismatch). For every failure point → enforce fix/prevention strategy at code + infra level.

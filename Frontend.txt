@@ -1,0 +1,242 @@
+🎨 READY-TO-USE FIGMA AI PROMPT: Car Dealership Website
+🔹 Global Design System
+
+Color Palette:
+
+Primary Gradient: Deep Blue (#0D1B2A) → Electric Cyan (#00BFFF).
+
+Secondary Gradient: Sunset Orange (#FF7A18) → Golden Yellow (#FFC837).
+
+Accent: Metallic Silver (#E5E5E5), Charcoal Black (#111111).
+
+Typography:
+
+Headings: Montserrat Bold (uppercase).
+
+Body: Inter Regular.
+
+Accent/Prices: Poppins Semi-bold.
+
+Grid System:
+
+Desktop: 12-column grid, 1440px width.
+
+Tablet: 8-column grid.
+
+Mobile: 4-column grid.
+
+UI Components:
+
+Buttons: Gradient-filled, rounded corners (12px), hover glow.
+
+Cards: Drop-shadow, hover tilt animation.
+
+Inputs: Glassmorphism style with subtle borders.
+
+Interactions:
+
+Smooth fade & slide transitions.
+
+Micro-interactions on hover/tap.
+
+Sticky elements for CTAs and navigation.
+
+Modes: Support Dark Mode toggle.
+
+🔹 Page 1: Homepage
+
+Hero Section:
+
+Full-width looping car video background.
+
+Centered tagline: “Drive Your Future Today” (H1, white, bold).
+
+Search bar with dropdowns (Make, Model, Year, Price). Glassmorphism effect.
+
+CTA Buttons: “Shop New Cars” | “Shop Used Cars” | “Sell Your Car” (gradient + bounce hover).
+
+Featured Cars Slider:
+
+Horizontal carousel with parallax scroll.
+
+Each card = large car image, price tag, quick specs, “View Details.”
+
+Trust Badges: Row of icons with text (e.g., “5,000+ Cars Sold | 4.9/5 Rating”).
+
+🔹 Page 2: Inventory/Search
+
+Filter Sidebar (accordion animation): Make, Model, Year, Price Range (slider), Mileage, Fuel Type, Transmission, Color.
+
+Grid of Cars:
+
+Desktop: 3-column.
+
+Mobile: Swipeable cards.
+
+Each card: Image, price, short specs, CTA. Hover = zoom + secondary car angle.
+
+Sort Bar: Dropdown (Price Low–High, Newest, Mileage, Popular).
+
+🔹 Page 3: Vehicle Detail Page (VDP)
+
+Hero Carousel: 360° car viewer, video option.
+
+Specs Section (Tabbed): Overview | Performance | Safety | Financing.
+
+Pricing Breakdown: Market price, discounts, financing estimate.
+
+Tools:
+
+Sticky Financing Calculator (interactive sliders).
+
+Trade-in Value Estimator.
+
+Sticky Bottom Bar (Mobile): “Book Test Drive” | “Apply for Financing.”
+
+Trust Indicators: Carfax logo, verified reviews section.
+
+🔹 Page 4: Financing & Trade-In
+
+Financing Pre-Approval Form: Multi-step, progress bar animation.
+
+Payment Calculator: Real-time updates when adjusting sliders.
+
+Special Offers: Cards with ribbons (e.g., “0% APR”).
+
+Trade-In Tool: Form with instant valuation feedback.
+
+🔹 Page 5: Services & Parts
+
+Service Booking: Calendar picker with available time slots.
+
+Parts Search: Input + filters.
+
+Maintenance Plans: Tiered pricing cards (Basic | Premium | VIP).
+
+Icons Row: Oil, Tires, Inspections, Repairs.
+
+🔹 Page 6: New & Used Cars
+
+Tabs at top: New Cars | Certified Pre-Owned | Specials.
+
+New Cars: Filter by manufacturer logos.
+
+Used Cars: Cards with warranty badge.
+
+Specials: Discount cards with animated ribbons.
+
+🔹 Page 7: About Us
+
+Timeline Section: Horizontal scrolling milestones.
+
+Team Grid: Circular profile images, hover reveal bio.
+
+Awards/Certifications: Row of logos with subtle glow.
+
+🔹 Page 8: Blog
+
+Grid Cards: Hero images + category labels.
+
+Categories: Buying Tips | Financing | Maintenance | New Releases.
+
+Cards slide in as user scrolls.
+
+🔹 Page 9: Contact & Locations
+
+Google Map Embed: Dark styled map.
+
+Cards: Location name, address, phone, “Get Directions” button.
+
+Live Chat: Floating widget.
+
+WhatsApp CTA: Sticky button bottom-right (mobile-first).
+
+🔹 Page 10: Customer Account
+
+Dashboard Sections: Saved Cars | Financing Tracker | Appointments | Profile.
+
+Saved Cars: Grid with compare + delete option.
+
+Financing Tracker: Progress bar with steps.
+
+Appointments: Calendar view.
+
+🔹 Extra Features (Global)
+
+Car Comparison Tool: Drag-to-compare slider.
+
+360° Virtual Tour: Car interior/exterior viewer.
+
+Home Delivery: Animated delivery truck tracking UI.
+
+AI Chat Assistant: Floating chatbot with FAQs.
+
+Gamification: Financing form progress bar + rewards for booking test drives.
+
+Accessibility: Voice search in inventory, WCAG contrast compliance, ARIA roles.
+
+11. Blog / Resources Section
+* Grid Layout with hero image cards.
+* Categories: Buying Tips | Financing | Maintenance | New Releases.
+* Blog cards slide in from bottom when scrolled.
+12. Contact & Locations
+* Google Maps Integration (dark mode styled).
+* Multiple locations in card view with “Directions” button.
+* Live Chat widget (bottom-right, floating).
+* CTA: “Call Us / WhatsApp Now” button.
+13. Customer Account / Dashboard
+* Saved Cars section with wishlist.
+* Application Tracker: Financing status bar.
+* Appointments Overview: Scheduled test drives & services.
+* Profile Settings with easy UX.
+14. Extra Interactive Features
+* Car Comparison Tool: Split screen drag-to-compare.
+* 360° Virtual Tour: Interior + exterior spin.
+* Home Delivery Option: Animated truck icon + progress updates.
+* Language Toggle: English / Spanish.
+* AI Chat Assistant: FAQ + lead capture.
+15. Navigation System
+* Desktop: Sticky top nav, transparent → filled gradient on scroll.
+* Dropdown (mega menu): Hover to reveal car categories.
+* Mobile: Full-screen slide-in menu, bottom nav for quick access.
+16. Animations & Transitions
+* Global: Smooth page transitions with fade & slide.
+* Hero text: Typewriter animation.
+* Buttons: Gradient shift + bounce hover.
+* Cards: Micro-interactions (lift + glow).
+* Loading State: Animated car outline racing across screen.
+17. Micro-Interactions
+* Filter slider ticks when adjusted.
+* Buttons ripple when tapped (mobile).
+* Hover reveals secondary car angle.
+18. Mobile Experience
+* Grid → Carousel for car cards.
+* Sticky Bottom Nav Bar: Home, Search, Compare, Favorites, Account.
+* Floating CTA button for quick financing/apply.
+* Swipe-based navigation (car galleries, filters).
+19. Trust & Conversion Boosters
+* Floating sticky “Chat with Dealer” button.
+* Review stars under each car.
+* Trust badges in checkout flow.
+* Urgency nudges (“3 people viewed this car today”).
+20. Gamification
+* Financing application progress bar.
+* Rewards: “Book a Test Drive → Get Free Service Voucher.”
+* User badges for repeat customers.
+21. Accessibility & SEO
+* WCAG color contrast compliant.
+* ARIA roles for screen readers.
+* Font scaling for visually impaired users.
+* Voice search integration.
+⚡ Final Structure (Menu)
+Home | Search Inventory | New Cars | Used Cars | Specials | Financing | Trade-In | Service & Parts | About Us | Blog | Contact | My Account
+
+Final and most important instructions: We are building with full professionality, scalability , flexibility .
+
+Divide into sections and tasks and implement the little by little, step by step.
+no lazy code, no spagetti code.
+Make use of JSON prompts for detail representation and structure.
+
+And most importantly lets PRD TXT file for the project. And a change log markdown file will be created and updated after every implementation and build process to make sure the ai is in check on build process, memory state management and for reference. 
+
+Ask me questions to understand
