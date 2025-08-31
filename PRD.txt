@@ -874,6 +874,11 @@ CORE TABLES:
 - blog_posts: Content management
 - analytics_events: User behavior tracking
 
+Note: The list above represents the complete target schema. The initial
+database migration establishes the core tables (profiles, locations, vehicles,
+vehicle_media, price_history), with the remaining tables to be added in
+subsequent development phases.
+
 INDEXES & PERFORMANCE:
 - Composite indexes on vehicles (make, model, year, price)
 - Full-text search indexes on searchable content
