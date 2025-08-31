@@ -3,14 +3,18 @@ import apiClient from '../../../services/api';
 import { useFilterStore } from '../../../hooks/useFilterStore';
 import { Vehicle } from '../../../data/mockVehicleData';
 import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
+import FilterSidebar from '../../organisms/FilterSidebar/FilterSidebar';
 
 const InventoryPage = () => {
-  // Select only the filter values from the store to trigger re-renders only when they change.
+  // Select the filter values from the store.
+  // This component will re-render whenever these specific values change.
   const filters = useFilterStore((state) => ({
     make: state.make,
     model: state.model,
-    priceMax: state.priceMax,
-    // Add other filters here as they are implemented
+    priceRange: state.priceRange,
+    yearRange: state.yearRange,
+    bodyTypes: state.bodyTypes,
+    fuelTypes: state.fuelTypes,
   }));
 
   const { data: vehicles, isLoading, isError, error } = useQuery<Vehicle[], Error>({
@@ -18,10 +22,33 @@ const InventoryPage = () => {
     // automatically whenever any value in this object changes.
     queryKey: ['vehicles', filters],
     queryFn: async () => {
+      // Clone the filters to avoid mutating the original store state
+      const queryParams: any = {
+        ...filters,
+        price_min: filters.priceRange[0],
+        price_max: filters.priceRange[1],
+        year_min: filters.yearRange[0],
+        year_max: filters.yearRange[1],
+      };
+
+      // Convert array filters to comma-separated strings for the API
+      if (queryParams.bodyTypes.length > 0) {
+        queryParams.bodyType = queryParams.bodyTypes.join(',');
+      }
+      if (queryParams.fuelTypes.length > 0) {
+        queryParams.fuelType = queryParams.fuelTypes.join(',');
+      }
+      // Clean up the object to match API expectations
+      delete queryParams.priceRange;
+      delete queryParams.yearRange;
+      delete queryParams.bodyTypes;
+      delete queryParams.fuelTypes;
+
       // Remove null/empty values from filters before sending to the API
       const activeFilters = Object.fromEntries(
-        Object.entries(filters).filter(([, value]) => value !== null && value !== '')
+        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '')
       );
+
       const response = await apiClient.get('/vehicles/search', {
         params: activeFilters,
       });
@@ -30,29 +57,27 @@ const InventoryPage = () => {
   });
 
   return (
-    <div>
-      <h1 className="text-3xl font-heading mb-4">Vehicle Inventory</h1>
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-heading mb-8">Vehicle Inventory</h1>
 
-      {/* Placeholder for filter controls */}
-      <div className="p-4 mb-8 bg-gray-100 rounded-lg">
-        <p className="font-bold">Filters will go here.</p>
-        <p className="text-sm text-gray-600">Current Make Filter: {filters.make || 'None'}</p>
-      </div>
+      <div className="flex flex-col lg:flex-row gap-8">
+        <FilterSidebar />
 
-      <div className="mt-8">
-        {isLoading && <p>Loading vehicles...</p>}
-        {isError && <p className="text-red-500">Error fetching vehicles: {error.message}</p>}
-        {vehicles && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {vehicles.length > 0 ? (
-              vehicles.map((vehicle) => (
-                <VehicleCard key={vehicle.id} vehicle={vehicle} />
-              ))
-            ) : (
-              <p className="col-span-full">No vehicles found matching your criteria.</p>
-            )}
-          </div>
-        )}
+        <main className="flex-1">
+          {isLoading && <p>Loading vehicles...</p>}
+          {isError && <p className="text-red-500">Error fetching vehicles: {error.message}</p>}
+          {vehicles && (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {vehicles.length > 0 ? (
+                vehicles.map((vehicle) => (
+                  <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                ))
+              ) : (
+                <p className="col-span-full">No vehicles found matching your criteria.</p>
+              )}
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
