@@ -1,9 +1,14 @@
+import HeroSection from "../../organisms/HeroSection/HeroSection";
+
 const HomePage = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-heading">Welcome to the Car Dealership</h1>
-      <p className="mt-4">This is the public home page.</p>
-    </div>
+    <>
+      <HeroSection />
+      {/* Other homepage sections like 'Featured Cars' and 'Trust Indicators' will go here */}
+      <div className="h-screen bg-white text-charcoal p-8">
+        <h2 className="text-3xl font-heading">More Content Below</h2>
+      </div>
+    </>
   );
 };
 
