@@ -10,6 +10,7 @@ export default function Layout() {
           </Link>
           <div className="space-x-4">
             <Link to="/" className="p-2 hover:text-accent-silver transition-colors">Home</Link>
+            <Link to="/inventory" className="p-2 hover:text-accent-silver transition-colors">Inventory</Link>
             <Link to="/dashboard" className="p-2 hover:text-accent-silver transition-colors">Dashboard</Link>
             <Link to="/login" className="p-2 hover:text-accent-silver transition-colors">Login</Link>
           </div>
