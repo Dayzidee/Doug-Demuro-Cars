@@ -11,7 +11,8 @@ const InventoryPage = () => {
   const filters = useFilterStore((state) => ({
     make: state.make,
     model: state.model,
-    priceMax: state.priceMax,
+    priceRange: state.priceRange,
+    yearRange: state.yearRange,
     bodyTypes: state.bodyTypes,
     fuelTypes: state.fuelTypes,
   }));
@@ -22,7 +23,13 @@ const InventoryPage = () => {
     queryKey: ['vehicles', filters],
     queryFn: async () => {
       // Clone the filters to avoid mutating the original store state
-      const queryParams: any = { ...filters };
+      const queryParams: any = {
+        ...filters,
+        price_min: filters.priceRange[0],
+        price_max: filters.priceRange[1],
+        year_min: filters.yearRange[0],
+        year_max: filters.yearRange[1],
+      };
 
       // Convert array filters to comma-separated strings for the API
       if (queryParams.bodyTypes.length > 0) {
@@ -31,12 +38,15 @@ const InventoryPage = () => {
       if (queryParams.fuelTypes.length > 0) {
         queryParams.fuelType = queryParams.fuelTypes.join(',');
       }
-      delete queryParams.bodyTypes; // Clean up the object
-      delete queryParams.fuelTypes; // Clean up the object
+      // Clean up the object to match API expectations
+      delete queryParams.priceRange;
+      delete queryParams.yearRange;
+      delete queryParams.bodyTypes;
+      delete queryParams.fuelTypes;
 
       // Remove null/empty values from filters before sending to the API
       const activeFilters = Object.fromEntries(
-        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '' && Array.isArray(value) === false)
+        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '')
       );
 
       const response = await apiClient.get('/vehicles/search', {

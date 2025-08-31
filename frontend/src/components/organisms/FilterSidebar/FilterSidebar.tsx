@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFilterStore } from '../../../hooks/useFilterStore';
 import FilterGroup from '../../molecules/FilterGroup/FilterGroup';
+import RangeSlider from '../../molecules/RangeSlider/RangeSlider';
 
 // In a real app, these options would likely come from an API
 const bodyTypeOptions = [
@@ -19,7 +20,10 @@ const fuelTypeOptions = [
 ];
 
 const FilterSidebar = () => {
-  const { bodyTypes, fuelTypes, toggleBodyType, toggleFuelType, resetFilters } = useFilterStore();
+  const {
+    bodyTypes, fuelTypes, priceRange, yearRange,
+    toggleBodyType, toggleFuelType, setPriceRange, setYearRange, resetFilters
+  } = useFilterStore();
 
   return (
     <aside className="w-full lg:w-1/4 p-6 bg-white rounded-lg shadow-lg h-fit">
@@ -44,6 +48,34 @@ const FilterSidebar = () => {
           selectedValues={fuelTypes}
           onChange={toggleFuelType}
         />
+        <hr />
+        <div>
+          <h3 className="font-semibold mb-4 text-charcoal">Price Range</h3>
+          <RangeSlider
+            min={0}
+            max={200000}
+            value={priceRange}
+            onChange={(value) => setPriceRange(value as [number, number])}
+          />
+          <div className="flex justify-between text-sm text-gray-500 mt-2">
+            <span>${priceRange[0].toLocaleString()}</span>
+            <span>${priceRange[1].toLocaleString()}</span>
+          </div>
+        </div>
+        <hr />
+        <div>
+          <h3 className="font-semibold mb-4 text-charcoal">Year</h3>
+           <RangeSlider
+            min={2000}
+            max={new Date().getFullYear()}
+            value={yearRange}
+            onChange={(value) => setYearRange(value as [number, number])}
+          />
+          <div className="flex justify-between text-sm text-gray-500 mt-2">
+            <span>{yearRange[0]}</span>
+            <span>{yearRange[1]}</span>
+          </div>
+        </div>
       </div>
     </aside>
   );

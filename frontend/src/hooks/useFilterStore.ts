@@ -4,14 +4,16 @@ import { create } from 'zustand';
 interface FilterState {
   make: string;
   model: string;
-  priceMax: number | null;
+  priceRange: [number, number];
+  yearRange: [number, number];
   bodyTypes: string[];
   fuelTypes: string[];
 
   // Actions to update the state
   setMake: (make: string) => void;
   setModel: (model: string) => void;
-  setPriceMax: (price: number | null) => void;
+  setPriceRange: (range: [number, number]) => void;
+  setYearRange: (range: [number, number]) => void;
   toggleBodyType: (bodyType: string) => void;
   toggleFuelType: (fuelType: string) => void;
 
@@ -23,7 +25,8 @@ interface FilterState {
 const initialState = {
   make: '',
   model: '',
-  priceMax: null,
+  priceRange: [0, 200000] as [number, number],
+  yearRange: [2000, new Date().getFullYear()] as [number, number],
   bodyTypes: [],
   fuelTypes: [],
 };
@@ -34,7 +37,8 @@ export const useFilterStore = create<FilterState>((set) => ({
 
   setMake: (make) => set({ make }),
   setModel: (model) => set({ model }),
-  setPriceMax: (price) => set({ priceMax: price }),
+  setPriceRange: (range) => set({ priceRange: range }),
+  setYearRange: (range) => set({ yearRange: range }),
 
   toggleBodyType: (bodyType) =>
     set((state) => ({
