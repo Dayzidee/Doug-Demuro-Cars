@@ -122,3 +122,6 @@ venv
 
 # Custom
 backend/flask.log
+
+# Node
+frontend/node_modules/
