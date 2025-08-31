@@ -4,14 +4,18 @@ def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__)
 
-    # A default secret key for development.
-    # In production, this should be loaded from a config file or environment variable.
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-    )
+    # Load configuration from the config object
+    from .core.config import Config
+    app.config.from_object(Config)
 
     # Register API blueprints
     from .api import meta
+    from .api import user
     app.register_blueprint(meta.bp)
+    app.register_blueprint(user.bp)
+
+    # Initialize database connection handling
+    from .core import db
+    db.init_app(app)
 
     return app
