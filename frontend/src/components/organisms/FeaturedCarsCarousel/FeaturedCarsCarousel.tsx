@@ -12,8 +12,13 @@ const FeaturedCarsCarousel = () => {
           {mockVehicleData.map((vehicle) => (
             <div key={vehicle.id} className="snap-center flex-shrink-0 w-full sm:w-80 md:w-96">
 
+
+          {mockVehicleData.map((vehicle) => (
+            <div key={vehicle.id} className="snap-center flex-shrink-0 w-full sm:w-80 md:w-96">
+
           {vehicles.map((vehicle) => (
             <div key={vehicle.id} className="snap-start">
+
 
               <VehicleCard vehicle={vehicle} />
             </div>

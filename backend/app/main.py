@@ -16,15 +16,22 @@ def create_app():
     from .api import inventory as inventory_bp
     from .api import listings as listings_bp
 
+
+    from .api import inventory as inventory_bp
+    from .api import listings as listings_bp
+
     from .api import vehicles
-
-
-
 
     from .api import gallery
     from .api import offers as offers_bp
     from .api.admin import offers as admin_offers_bp
     from .api import tools as tools_bp
+
+    app.register_blueprint(meta.bp)
+    app.register_blueprint(user.bp)
+    app.register_blueprint(stats.bp)
+    app.register_blueprint(inventory_bp.bp)
+    app.register_blueprint(listings_bp.bp)
 
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)

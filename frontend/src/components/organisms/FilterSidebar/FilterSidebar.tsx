@@ -23,6 +23,11 @@ const FilterSidebar = () => {
   const {
     bodyTypes, fuelTypes, priceRange, yearRange,
     toggleBodyType, toggleFuelType, setPriceRange, setYearRange, resetFilters
+
+    bodyTypes, fuelTypes, priceRange, yearRange,
+    toggleBodyType, toggleFuelType, setPriceRange, setYearRange, resetFilters
+
+
   } = useFilterStore();
 
   return (
