@@ -20,7 +20,9 @@ const InventoryPage = () => {
     yearRange: state.yearRange,
     bodyTypes: state.bodyTypes,
     fuelTypes: state.fuelTypes,
+    sort: state.sort,
   }));
+  const setSort = useFilterStore((state) => state.setSort);
 
   const { data, isLoading, isError, error } = useQuery<VehicleSearchResponse, Error>({
     queryKey: ['vehicles', filters],
@@ -55,7 +57,23 @@ const InventoryPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-heading mb-8">Vehicle Inventory</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-heading">Vehicle Inventory</h1>
+        <div>
+          <label htmlFor="sort-by" className="text-sm font-medium text-gray-700 mr-2">Sort by:</label>
+          <select
+            id="sort-by"
+            className="p-2 border rounded-lg bg-white shadow-sm"
+            value={filters.sort}
+            onChange={(e) => setSort(e.target.value)}
+          >
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="year_desc">Year: Newest First</option>
+            <option value="year_asc">Year: Oldest First</option>
+          </select>
+        </div>
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         <FilterSidebar facets={facets} isLoading={isLoading} />

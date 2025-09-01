@@ -30,6 +30,19 @@ def search_vehicles():
             fuel_types = args.get('fuelType').split(',')
             filtered_vehicles = [v for v in filtered_vehicles if v['fuel_type'] in fuel_types]
 
+        # Sorting logic
+        sort_param = args.get('sort')
+        if sort_param:
+            try:
+                key, order = sort_param.split('_')
+                if key == 'price': key = 'price_current'
+
+                reverse = order == 'desc'
+                filtered_vehicles.sort(key=lambda v: v.get(key, 0), reverse=reverse)
+            except (ValueError, KeyError):
+                # Ignore invalid or unsupported sort parameters to prevent crashing
+                pass
+
         # Facet calculation on the already filtered data
         make_counts = Counter(v['make'] for v in filtered_vehicles)
         bodyType_counts = Counter(v['body_type'] for v in filtered_vehicles)
