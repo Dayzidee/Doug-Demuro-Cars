@@ -12,33 +12,21 @@ def create_app():
     from .api import meta
     from .api import user
     from .api import stats
-
-    from .api import inventory as inventory_bp
-    from .api import listings as listings_bp
-
     from .api import vehicles
 
+    # Admin blueprints
+    from .api.admin import vehicles as admin_vehicles_bp
+    from .api.admin import media as admin_media_bp
 
-
-
-    from .api import gallery
-    from .api import offers as offers_bp
-    from .api.admin import offers as admin_offers_bp
-    from .api import tools as tools_bp
-
+    # Register public blueprints
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
-
-    app.register_blueprint(inventory_bp.bp)
-    app.register_blueprint(listings_bp.bp)
-
     app.register_blueprint(vehicles.bp)
 
-    app.register_blueprint(gallery.bp)
-    app.register_blueprint(offers_bp.bp)
-    app.register_blueprint(admin_offers_bp.bp)
-    app.register_blueprint(tools_bp.bp)
+    # Register admin blueprints
+    app.register_blueprint(admin_vehicles_bp.bp)
+    app.register_blueprint(admin_media_bp.bp)
 
     # Initialize database connection handling
     from .core import db
