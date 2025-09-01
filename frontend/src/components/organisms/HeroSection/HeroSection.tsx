@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import SearchBar from '../../molecules/SearchBar/SearchBar';
 
 const HeroSection = () => {
@@ -32,9 +33,9 @@ const HeroSection = () => {
           <button className="px-8 py-3 font-semibold rounded-lg bg-secondary-gradient text-white hover:opacity-90 transition-opacity transform hover:scale-105">
             Shop Used Cars
           </button>
-          <a href="#promotions" className="px-8 py-3 font-semibold rounded-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all transform hover:scale-105">
-            View Current Offers
-          </a>
+          <Link to="/sell" className="px-8 py-3 font-semibold rounded-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all transform hover:scale-105">
+            Sell Your Car
+          </Link>
         </div>
       </div>
     </section>

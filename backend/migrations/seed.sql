@@ -18,10 +18,10 @@ VALUES
 
 -- 3. Insert Vehicles
 -- Associate vehicles with the locations created above.
-INSERT INTO public.vehicles (vin, make, model, year, price_current, mileage, body_type, fuel_type, transmission, exterior_color, location_id, description, features)
+INSERT INTO public.vehicles (vin, make, model, year, price_current, mileage, body_type, fuel_type, transmission, exterior_color, location_id, description, features, is_featured)
 VALUES
-('VIN001', 'Toyota', 'Camry', 2022, 25000.00, 15000, 'Sedan', 'Gasoline', 'Automatic', 'Blue', '8c27320b-9d7c-4a3a-8e2d-4b5a3e1c6b2b', 'A reliable and fuel-efficient sedan.', ARRAY['Bluetooth', 'Backup Camera']),
-('VIN002', 'Honda', 'CR-V', 2021, 28000.00, 25000, 'SUV', 'Gasoline', 'Automatic', 'Red', '8c27320b-9d7c-4a3a-8e2d-4b5a3e1c6b2b', 'A popular and versatile SUV.', ARRAY['Apple CarPlay', 'Lane Assist']),
-('VIN003', 'Ford', 'F-150', 2023, 45000.00, 5000, 'Truck', 'Gasoline', 'Automatic', 'Black', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A powerful and rugged truck for all your needs.', ARRAY['Towing Package', '4x4']),
-('VIN004', 'Tesla', 'Model 3', 2023, 48000.00, 10000, 'Sedan', 'Electric', 'Automatic', 'White', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A sleek and fast electric car.', ARRAY['Autopilot', 'Premium Sound']),
-('VIN005', 'BMW', 'X5', 2020, 55000.00, 35000, 'SUV', 'Hybrid', 'Automatic', 'Gray', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A luxury SUV with great performance and features.', ARRAY['Sunroof', 'Heated Seats', '360 Camera']);
+('VIN001', 'Toyota', 'Camry', 2022, 25000.00, 15000, 'Sedan', 'Gasoline', 'Automatic', 'Blue', '8c27320b-9d7c-4a3a-8e2d-4b5a3e1c6b2b', 'A reliable and fuel-efficient sedan.', ARRAY['Bluetooth', 'Backup Camera'], false),
+('VIN002', 'Honda', 'CR-V', 2021, 28000.00, 25000, 'SUV', 'Gasoline', 'Automatic', 'Red', '8c27320b-9d7c-4a3a-8e2d-4b5a3e1c6b2b', 'A popular and versatile SUV.', ARRAY['Apple CarPlay', 'Lane Assist'], true),
+('VIN003', 'Ford', 'F-150', 2023, 45000.00, 5000, 'Truck', 'Gasoline', 'Automatic', 'Black', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A powerful and rugged truck for all your needs.', ARRAY['Towing Package', '4x4'], true),
+('VIN004', 'Tesla', 'Model 3', 2023, 48000.00, 10000, 'Sedan', 'Electric', 'Automatic', 'White', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A sleek and fast electric car.', ARRAY['Autopilot', 'Premium Sound'], false),
+('VIN005', 'BMW', 'X5', 2020, 55000.00, 35000, 'SUV', 'Hybrid', 'Automatic', 'Gray', 'e5b5c7a1-5b5e-4e1e-9c1c-8b8b8b8b8b8b', 'A luxury SUV with great performance and features.', ARRAY['Sunroof', 'Heated Seats', '360 Camera'], true);

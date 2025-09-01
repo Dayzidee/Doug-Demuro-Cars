@@ -1,4 +1,5 @@
 import HeroSection from "../../organisms/HeroSection/HeroSection";
+import ValueProposition from "../../organisms/ValueProposition/ValueProposition";
 import FeaturedCarsCarousel from "../../organisms/FeaturedCarsCarousel/FeaturedCarsCarousel";
 import TrustIndicators from "../../organisms/TrustIndicators/TrustIndicators";
 import GalleryPreview from "../../organisms/GalleryPreview";
@@ -9,6 +10,7 @@ const HomePage = () => {
   return (
     <>
       <HeroSection />
+      <ValueProposition />
       <FeaturedCarsCarousel />
       <TrustIndicators />
       <GalleryPreview />

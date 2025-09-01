@@ -12,7 +12,15 @@ def create_app():
     from .api import meta
     from .api import user
     from .api import stats
+
+    from .api import inventory as inventory_bp
+    from .api import listings as listings_bp
+
     from .api import vehicles
+
+
+
+
     from .api import gallery
     from .api import offers as offers_bp
     from .api.admin import offers as admin_offers_bp
@@ -21,7 +29,12 @@ def create_app():
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
+
+    app.register_blueprint(inventory_bp.bp)
+    app.register_blueprint(listings_bp.bp)
+
     app.register_blueprint(vehicles.bp)
+
     app.register_blueprint(gallery.bp)
     app.register_blueprint(offers_bp.bp)
     app.register_blueprint(admin_offers_bp.bp)
