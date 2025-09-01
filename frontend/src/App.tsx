@@ -5,6 +5,7 @@ import GalleryPage from './components/templates/GalleryPage/GalleryPage';
 import LoginPage from './components/templates/LoginPage/LoginPage';
 import DashboardPage from './components/templates/DashboardPage/DashboardPage';
 import InventoryPage from './components/templates/InventoryPage/InventoryPage';
+import VehicleDetailPage from './components/templates/VehicleDetailPage/VehicleDetailPage';
 import AdminPromotionsPage from './components/templates/AdminPromotionsPage/AdminPromotionsPage';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/molecules/ProtectedRoute';
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="inventory" element={<InventoryPage />} />
+            <Route path="vehicles/:id" element={<VehicleDetailPage />} />
             <Route path="gallery" element={<GalleryPage />} />
             <Route path="login" element={<LoginPage />} />
 
