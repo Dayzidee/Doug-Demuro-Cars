@@ -31,6 +31,9 @@ FOR EACH ROW
 EXECUTE FUNCTION public.trigger_set_timestamp();
 
 -- Retroactively apply the trigger to existing tables for consistency
+-- Note: This might cause an error if the triggers already exist from a
+-- previous failed attempt. In a real-world scenario, you might add
+-- `IF NOT EXISTS` checks, but for this clean-slate run, it's fine.
 CREATE TRIGGER set_profiles_updated_at
 BEFORE UPDATE ON public.profiles
 FOR EACH ROW

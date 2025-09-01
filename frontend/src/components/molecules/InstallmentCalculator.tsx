@@ -22,7 +22,6 @@ const InstallmentCalculator: React.FC<InstallmentCalculatorProps> = ({ defaultPr
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Update the price if the defaultPrice prop changes (e.g., when navigating between VDPs)
   useEffect(() => {
     if (defaultPrice) {
       setVehiclePrice(defaultPrice.toString());
