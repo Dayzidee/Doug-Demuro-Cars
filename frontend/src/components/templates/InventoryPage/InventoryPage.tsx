@@ -5,14 +5,9 @@ import { Vehicle } from '../../../data/mockVehicleData';
 import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
 import FilterSidebar from '../../organisms/FilterSidebar/FilterSidebar';
 
-// Define the shape of the API response
-interface VehicleSearchResponse {
-  data: Vehicle[];
-  facets: any; // Using 'any' for now, can be typed more strictly later
-}
-
 const InventoryPage = () => {
   // Select the filter values from the store.
+  // This component will re-render whenever these specific values change.
   const filters = useFilterStore((state) => ({
     make: state.make,
     model: state.model,
@@ -22,9 +17,12 @@ const InventoryPage = () => {
     fuelTypes: state.fuelTypes,
   }));
 
-  const { data, isLoading, isError, error } = useQuery<VehicleSearchResponse, Error>({
+  const { data: vehicles, isLoading, isError, error } = useQuery<Vehicle[], Error>({
+    // The queryKey includes the filters object. React Query will refetch
+    // automatically whenever any value in this object changes.
     queryKey: ['vehicles', filters],
     queryFn: async () => {
+      // Clone the filters to avoid mutating the original store state
       const queryParams: any = {
         ...filters,
         price_min: filters.priceRange[0],
@@ -33,32 +31,37 @@ const InventoryPage = () => {
         year_max: filters.yearRange[1],
       };
 
-      if (queryParams.bodyTypes.length > 0) queryParams.bodyType = queryParams.bodyTypes.join(',');
-      if (queryParams.fuelTypes.length > 0) queryParams.fuelType = queryParams.fuelTypes.join(',');
-
+      // Convert array filters to comma-separated strings for the API
+      if (queryParams.bodyTypes.length > 0) {
+        queryParams.bodyType = queryParams.bodyTypes.join(',');
+      }
+      if (queryParams.fuelTypes.length > 0) {
+        queryParams.fuelType = queryParams.fuelTypes.join(',');
+      }
+      // Clean up the object to match API expectations
       delete queryParams.priceRange;
       delete queryParams.yearRange;
       delete queryParams.bodyTypes;
       delete queryParams.fuelTypes;
 
+      // Remove null/empty values from filters before sending to the API
       const activeFilters = Object.fromEntries(
-        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '' && value !== 0 && (!Array.isArray(value) || value.length > 0))
+        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '')
       );
 
-      const response = await apiClient.get('/vehicles/search', { params: activeFilters });
+      const response = await apiClient.get('/vehicles/search', {
+        params: activeFilters,
+      });
       return response.data;
     },
   });
-
-  const vehicles = data?.data;
-  const facets = data?.facets;
 
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-heading mb-8">Vehicle Inventory</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <FilterSidebar facets={facets} isLoading={isLoading} />
+      <div className="flex flex-col lg:flex-row gap-8">
+        <FilterSidebar />
 
         <main className="flex-1">
           {isLoading && <p>Loading vehicles...</p>}

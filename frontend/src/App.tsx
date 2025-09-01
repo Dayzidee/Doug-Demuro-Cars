@@ -25,12 +25,10 @@ function App() {
             <Route path="sell" element={<SellPage />} />
             <Route path="login" element={<LoginPage />} />
 
-            {/* Protected Routes for standard users */}
             <Route element={<ProtectedRoute />}>
               <Route path="dashboard" element={<DashboardPage />} />
             </Route>
 
-            {/* Protected Routes for admins */}
             <Route element={<AdminProtectedRoute />}>
               <Route path="admin/promotions" element={<AdminPromotionsPage />} />
             </Route>

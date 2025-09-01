@@ -13,7 +13,6 @@ def create_offer():
     if not data:
         return jsonify({"message": "Invalid input: No data provided"}), 400
 
-    # Basic validation
     required_fields = ['title', 'promo_type', 'start_date', 'end_date']
     if not all(field in data for field in required_fields):
         return jsonify({"message": f"Missing required fields: {required_fields}"}), 400
@@ -31,7 +30,6 @@ def list_all_offers():
     """List all offers, including inactive ones. Admin, Manager, or Staff access required."""
     try:
         supabase = get_supabase()
-        # Admin role bypasses the public RLS policy, allowing access to all offers.
         response = supabase.table('offers').select('*').order('created_at', desc=True).execute()
         return jsonify(response.data)
     except Exception as e:
@@ -42,7 +40,7 @@ def list_all_offers():
 def get_offer(offer_id):
     """Get a single offer by ID. Admin, Manager, or Staff access required."""
     try:
-        uuid.UUID(offer_id) # Validate UUID
+        uuid.UUID(offer_id)
     except ValueError:
         return jsonify({"message": "Invalid offer ID format"}), 400
 
@@ -60,7 +58,7 @@ def get_offer(offer_id):
 def update_offer(offer_id):
     """Update an existing offer. Admin, Manager, or Staff access required."""
     try:
-        uuid.UUID(offer_id) # Validate UUID
+        uuid.UUID(offer_id)
     except ValueError:
         return jsonify({"message": "Invalid offer ID format"}), 400
 
@@ -71,7 +69,6 @@ def update_offer(offer_id):
     try:
         supabase = get_supabase()
         response = supabase.table('offers').update(data).eq('id', offer_id).execute()
-        # The new trigger will automatically update the 'updated_at' field.
         if not response.data:
             return jsonify({"message": "Offer not found or no changes made"}), 404
         return jsonify(response.data[0])
@@ -83,7 +80,7 @@ def update_offer(offer_id):
 def delete_offer(offer_id):
     """Delete an offer. Admin, Manager, or Staff access required."""
     try:
-        uuid.UUID(offer_id) # Validate UUID
+        uuid.UUID(offer_id)
     except ValueError:
         return jsonify({"message": "Invalid offer ID format"}), 400
 
