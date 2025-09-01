@@ -19,17 +19,22 @@ const fuelTypeOptions = [
   { value: 'Diesel', label: 'Diesel' },
 ];
 
-const FilterSidebar = () => {
+interface FilterSidebarProps {
+  facets: any;
+  isLoading: boolean;
+}
+
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
   const {
     bodyTypes, fuelTypes, priceRange, yearRange,
     toggleBodyType, toggleFuelType, setPriceRange, setYearRange, resetFilters
   } = useFilterStore();
 
   return (
-    <aside className="w-full lg:w-1/4 p-6 bg-white rounded-lg shadow-lg h-fit">
+    <aside className={`w-full lg:w-1/4 p-6 bg-white rounded-lg shadow-lg h-fit transition-opacity ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
       <div className="flex justify-between items-center mb-6 border-b pb-4">
         <h2 className="text-2xl font-bold font-heading text-charcoal">Filters</h2>
-        <button onClick={resetFilters} className="text-sm text-gray-500 hover:text-charcoal transition-colors">
+        <button onClick={resetFilters} className="text-sm text-gray-500 hover:text-charcoal transition-colors" disabled={isLoading}>
           Reset All
         </button>
       </div>
@@ -40,6 +45,7 @@ const FilterSidebar = () => {
           options={bodyTypeOptions}
           selectedValues={bodyTypes}
           onChange={toggleBodyType}
+          counts={facets?.bodyType}
         />
         <hr />
         <FilterGroup
@@ -47,6 +53,7 @@ const FilterSidebar = () => {
           options={fuelTypeOptions}
           selectedValues={fuelTypes}
           onChange={toggleFuelType}
+          counts={facets?.fuelType}
         />
         <hr />
         <div>
