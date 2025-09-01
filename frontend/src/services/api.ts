@@ -55,5 +55,15 @@ export const fetchFeaturedVehicles = async (): Promise<Vehicle[]> => {
   return response.data;
 };
 
+/**
+ * Creates a new vehicle listing by sending the form data to the backend API.
+ * @param listingData The data for the new listing.
+ * @returns A promise that resolves to the newly created Vehicle object.
+ */
+export const createListing = async (listingData: any): Promise<Vehicle> => {
+  const response = await apiClient.post('/cars/sell', listingData);
+  return response.data;
+};
+
 
 export default apiClient;
