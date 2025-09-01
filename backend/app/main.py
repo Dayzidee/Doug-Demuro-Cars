@@ -13,10 +13,12 @@ def create_app():
     from .api import user
     from .api import stats
     from .api import vehicles
+    from .api import filters
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
     app.register_blueprint(vehicles.bp)
+    app.register_blueprint(filters.bp)
 
     # Initialize database connection handling
     from .core import db
