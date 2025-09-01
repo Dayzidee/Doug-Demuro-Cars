@@ -38,3 +38,37 @@ def auth_required(f):
 
         return f(*args, **kwargs)
     return decorated_function
+
+
+def admin_required(f):
+    """
+    A decorator that builds on @auth_required to ensure the user has an admin,
+    manager, or staff role. It fetches the user's profile to check their role.
+    """
+    @wraps(f)
+    @auth_required  # First, ensure the user is authenticated
+    def decorated_function(*args, **kwargs):
+        # g.user is available from the @auth_required decorator
+        user = g.user
+
+        try:
+            supabase = get_supabase()
+            # Fetch the user's profile from the 'profiles' table to get the role.
+            profile_response = supabase.table('profiles').select('role').eq('id', user.id).single().execute()
+
+            if not profile_response.data:
+                 return jsonify({"message": "User profile not found, cannot verify role"}), 404
+
+            profile = profile_response.data
+            # Check if the user's role is sufficient
+            if profile.get('role') not in ['admin', 'manager', 'staff']:
+                return jsonify({"message": "Administrator or staff access required"}), 403
+
+            # Optionally, store the profile in g as well
+            g.profile = profile
+
+        except Exception as e:
+            return jsonify({"message": "Role verification failed", "error": str(e)}), 500
+
+        return f(*args, **kwargs)
+    return decorated_function
