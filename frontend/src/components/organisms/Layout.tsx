@@ -15,6 +15,7 @@ export default function Layout() {
           <div className="space-x-4 flex items-center">
             <Link to="/" className="p-2 hover:text-accent-silver transition-colors">Home</Link>
             <Link to="/inventory" className="p-2 hover:text-accent-silver transition-colors">Inventory</Link>
+            <Link to="/sell" className="p-2 bg-secondary-gradient rounded-md text-white font-bold hover:opacity-90 transition-opacity">Sell Your Car</Link>
             <Link to="/gallery" className="p-2 hover:text-accent-silver transition-colors">Gallery</Link>
             {isAuthenticated && (
               <Link to="/dashboard" className="p-2 hover:text-accent-silver transition-colors">Dashboard</Link>

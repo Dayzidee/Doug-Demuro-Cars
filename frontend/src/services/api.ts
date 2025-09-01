@@ -1,7 +1,24 @@
 import axios from 'axios';
 
-// In a real app, this should be loaded from environment variables
-const API_BASE_URL = 'http://localhost:5000/api/v1';
+// Define the structure of a Vehicle object for the frontend
+export interface Vehicle {
+  id: string;
+  vin: string;
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  body_type: string;
+  fuel_type: string;
+  transmission: string;
+  exterior_color: string;
+  is_featured: boolean;
+  hero_image_url?: string;
+}
+
+// The base URL will be proxied by the Vite development server.
+const API_BASE_URL = '/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -28,5 +45,15 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+/**
+ * Fetches a list of featured vehicles from the backend API.
+ * @returns A promise that resolves to an array of Vehicle objects.
+ */
+export const fetchFeaturedVehicles = async (): Promise<Vehicle[]> => {
+  const response = await apiClient.get('/inventory/featured');
+  return response.data;
+};
+
 
 export default apiClient;

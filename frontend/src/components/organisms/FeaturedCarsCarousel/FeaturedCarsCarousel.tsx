@@ -44,10 +44,8 @@ const FeaturedCarsCarousel: React.FC = () => {
         <h2 className="text-3xl font-bold font-heading text-charcoal mb-8">Featured Vehicles</h2>
         <div className="flex space-x-8 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
           {vehicles.map((vehicle) => (
-            <div key={vehicle.id} className="snap-center flex-shrink-0 w-full sm:w-80 md:w-96">
-              <Link to={`/vehicles/${vehicle.id}`} className="block h-full">
-                <VehicleCard vehicle={vehicle} />
-              </Link>
+            <div key={vehicle.id} className="snap-start">
+              <VehicleCard vehicle={vehicle} />
             </div>
           ))}
         </div>
