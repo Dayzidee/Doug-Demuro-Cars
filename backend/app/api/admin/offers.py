@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from ....core.db import get_supabase
-from ....core.security import admin_required
+from ...core.db import get_supabase
+from ...core.security import admin_required
 import uuid
 
 bp = Blueprint('admin_offers', __name__, url_prefix='/api/v1/admin/offers')
