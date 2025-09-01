@@ -16,7 +16,9 @@ const HomePage = () => {
       <GalleryPreview />
       <DynamicPromoSection />
       <section className="py-12 md:py-16 bg-gray-800">
-        <InstallmentCalculator />
+        <div className="container mx-auto">
+          <InstallmentCalculator />
+        </div>
       </section>
     </>
   );

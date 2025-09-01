@@ -19,6 +19,12 @@ const InstallmentCalculator: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (defaultPrice) {
+      setVehiclePrice(defaultPrice.toString());
+    }
+  }, [defaultPrice]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

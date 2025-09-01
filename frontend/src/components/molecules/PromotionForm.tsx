@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// This interface should be shared or imported from a types file
 export interface Offer {
   id?: string;
   title: string;
@@ -30,15 +29,12 @@ const PromotionForm: React.FC<PromotionFormProps> = ({ promotion, onSave, onCanc
 
   useEffect(() => {
     if (promotion) {
-      // If editing, populate form with existing promotion data
-      // Format dates for the date input type (YYYY-MM-DD)
       setFormData({
         ...promotion,
         start_date: promotion.start_date.split('T')[0],
         end_date: promotion.end_date.split('T')[0],
       });
     } else {
-      // If creating, reset to default state
       setFormData({
         title: '',
         description: '',

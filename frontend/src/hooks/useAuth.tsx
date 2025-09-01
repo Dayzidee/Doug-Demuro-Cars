@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (token: string) => {
     try {
-      // The /auth/me endpoint should return the user's profile
       const response = await fetch('/api/v1/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -35,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const profile = await response.json();
         setUser(profile);
       } else {
-        // If the token is invalid or expired, clear it
         localStorage.removeItem('supabase_token');
         setUser(null);
       }
@@ -45,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Check for an existing session on initial component mount
   useEffect(() => {
     const checkUserSession = async () => {
       const token = localStorage.getItem('supabase_token');
@@ -58,7 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (token: string) => {
-    // In a real app, you'd get the token from the login API response
     localStorage.setItem('supabase_token', token);
     setIsLoading(true);
     await fetchUserProfile(token);
@@ -78,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading
   };
 
-  // Don't render children until the initial auth check is complete
   return (
     <AuthContext.Provider value={value}>
       {!isLoading && children}

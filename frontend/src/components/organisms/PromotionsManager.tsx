@@ -67,7 +67,7 @@ const PromotionsManager: React.FC = () => {
       }
 
       setIsModalOpen(false);
-      fetchPromotions(); // Refresh the list
+      fetchPromotions();
     } catch (err) {
       if (err instanceof Error) alert(`Error: ${err.message}`);
       else alert('An unknown error occurred while saving.');
@@ -165,7 +165,7 @@ const PromotionsManager: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
           <div className="bg-gray-800 rounded-lg p-8 w-full max-w-lg shadow-2xl">
-            <h3 className="text-xl font-bold mb-6">{selectedPromotion ? 'Edit Promotion' : 'Create New Promotion'}</h3>
+            <h3 className="text-xl font-bold mb-6 text-center">{selectedPromotion ? 'Edit Promotion' : 'Create New Promotion'}</h3>
             <PromotionForm
               promotion={selectedPromotion}
               onSave={handleSave}
