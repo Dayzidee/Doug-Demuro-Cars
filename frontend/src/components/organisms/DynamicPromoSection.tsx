@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
+// Define the type for a single offer, based on the backend schema
 interface Offer {
   id: string;
   title: string;
   description?: string;
   promo_type: 'deal' | 'featured_vehicle' | 'seasonal_offer';
+  terms_md?: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
 }
 
 const DynamicPromoSection: React.FC = () => {
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [offers, setOffers] = React.useState<Offer[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchOffers = async () => {
-      setLoading(true);
-      setError(null);
       try {
+        setLoading(true);
         const response = await fetch('/api/v1/offers');
         if (!response.ok) {
           throw new Error('Failed to fetch promotions');
@@ -24,8 +28,11 @@ const DynamicPromoSection: React.FC = () => {
         const data = await response.json();
         setOffers(data);
       } catch (err) {
-        if (err instanceof Error) setError(err.message);
-        else setError('An unknown error occurred');
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unknown error occurred');
+        }
       } finally {
         setLoading(false);
       }
@@ -35,13 +42,14 @@ const DynamicPromoSection: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center p-8">Loading Promotions...</div>;
+    return <div className="text-center p-8">Loading Promotions...</div>; // Replace with a proper skeleton loader
   }
 
   if (error) {
     return <div className="text-center p-8 text-red-500">Error: {error}</div>;
   }
 
+  // Don't render the section if there are no active offers to show
   if (offers.length === 0) {
     return null;
   }

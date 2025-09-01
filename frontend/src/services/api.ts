@@ -65,5 +65,15 @@ export const createListing = async (listingData: any): Promise<Vehicle> => {
   return response.data;
 };
 
+/**
+ * Fetches a single vehicle by its ID from the backend API.
+ * @param vehicleId The ID of the vehicle to fetch.
+ * @returns A promise that resolves to a Vehicle object.
+ */
+export const fetchVehicleById = async (vehicleId: string): Promise<Vehicle> => {
+  const response = await apiClient.get(`/inventory/${vehicleId}`);
+  return response.data;
+};
+
 
 export default apiClient;

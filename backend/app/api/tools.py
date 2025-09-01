@@ -18,6 +18,7 @@ def calculate_amortization(principal, annual_rate, term_months):
 
     monthly_rate = (annual_rate / 100) / 12
 
+    # Formula for monthly payment
     numerator = monthly_rate * ((1 + monthly_rate) ** term_months)
     denominator = ((1 + monthly_rate) ** term_months) - 1
     monthly_payment = principal * (numerator / denominator)
@@ -55,9 +56,10 @@ def calculate_payment_endpoint():
         if loan_term_months == 0 and vehicle_price > down_payment:
             return jsonify({"message": "Loan term cannot be zero if there is a balance to pay."}), 400
 
+
         principal = vehicle_price - down_payment
 
-        if principal <= 0:
+        if principal <= 0: # If the car is fully paid for or overpaid
              return jsonify({
                 "monthly_payment": 0,
                 "total_loan_amount": 0,
