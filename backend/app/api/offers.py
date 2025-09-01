@@ -17,4 +17,5 @@ def list_active_offers():
         response = query.execute()
         return jsonify(response.data)
     except Exception as e:
+        print(f"Error listing active offers: {e}")
         return jsonify({"message": "An error occurred while fetching offers.", "error": str(e)}), 500

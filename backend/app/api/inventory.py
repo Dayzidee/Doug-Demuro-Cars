@@ -89,3 +89,32 @@ def search_vehicles():
     except Exception as e:
         print(f"Error in vehicle search: {e}")
         return jsonify({"message": "An error occurred during vehicle search.", "error": str(e)}), 500
+
+import uuid
+
+@bp.route('/<vehicle_id>', methods=['GET'])
+def get_vehicle_details(vehicle_id):
+    """
+    Retrieves the full details for a single vehicle by its ID.
+    """
+    try:
+        # Validate that vehicle_id is a valid UUID
+        uuid.UUID(vehicle_id)
+    except ValueError:
+        return jsonify({"message": "Invalid vehicle ID format"}), 400
+
+    try:
+        supabase = get_supabase()
+        response = supabase.table('vehicles').select('*').eq('id', vehicle_id).single().execute()
+
+        if not response.data:
+            return jsonify({"message": "Vehicle not found"}), 404
+
+        vehicle_data = response.data
+        validated_vehicle = Vehicle.model_validate(vehicle_data)
+
+        return jsonify(validated_vehicle.model_dump(by_alias=True))
+
+    except Exception as e:
+        print(f"Error fetching vehicle details: {e}")
+        return jsonify({"message": "An error occurred while fetching vehicle details.", "error": str(e)}), 500

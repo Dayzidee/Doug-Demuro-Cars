@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom'; // Assuming React Router is used for navigation
 
+// Define the type for a single media item, based on the backend schema
 interface VehicleMedia {
   id: string;
   url: string;
   alt_text?: string;
+  is_primary: boolean;
 }
 
 const GalleryPreview: React.FC = () => {
-  const [images, setImages] = useState<VehicleMedia[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [images, setImages] = React.useState<VehicleMedia[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchPreviewImages = async () => {
-      setLoading(true);
-      setError(null);
       try {
+        setLoading(true);
+        // The backend API endpoint for the gallery preview
         const response = await fetch('/api/v1/gallery/preview');
         if (!response.ok) {
           throw new Error('Failed to fetch gallery preview images');
@@ -24,17 +26,21 @@ const GalleryPreview: React.FC = () => {
         const data = await response.json();
         setImages(data);
       } catch (err) {
-        if (err instanceof Error) setError(err.message);
-        else setError('An unknown error occurred');
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unknown error occurred');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchPreviewImages();
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs once on mount
 
   if (loading) {
+    // In a real app, this would be a skeleton loader component
     return <div className="text-center p-8">Loading Gallery...</div>;
   }
 
@@ -53,7 +59,7 @@ const GalleryPreview: React.FC = () => {
                 src={image.url}
                 alt={image.alt_text || 'Vehicle showcase'}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300 ease-in-out"
-                loading="lazy"
+                loading="lazy" // Use native lazy loading for performance
               />
             </div>
           ))}

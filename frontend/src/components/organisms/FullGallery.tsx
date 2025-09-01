@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+// Define the types based on the expected API response
 interface VehicleData {
   make: string;
   model: string;
@@ -25,10 +26,11 @@ const FullGallery: React.FC = () => {
 
   const PAGE_SIZE = 30;
 
+  // Debounce the search term to avoid excessive API calls
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500);
+    }, 500); // 500ms delay
 
     return () => {
       clearTimeout(handler);
@@ -63,12 +65,13 @@ const FullGallery: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, filters, debouncedSearchTerm]);
+  }, [page, filters, debouncedSearchTerm]); // Dependencies for the fetch function
 
+  // Effect to trigger a new search when filters or debounced search term change
   useEffect(() => {
-    setPage(1);
+    setPage(1); // Reset page to 1 for new searches
     fetchImages(true);
-  }, [filters, debouncedSearchTerm]);
+  }, [filters, debouncedSearchTerm]); // Note: fetchImages is not a dependency here to avoid loops
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
@@ -76,11 +79,12 @@ const FullGallery: React.FC = () => {
     }
   };
 
+  // Effect to fetch more images when page number increases
   useEffect(() => {
     if (page > 1) {
       fetchImages(false);
     }
-  }, [page]);
+  }, [page]); // Note: fetchImages is not a dependency here
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
