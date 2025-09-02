@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-// Using a simplified local calculation for now to focus on UI
+// Reverting to local calculation as the backend endpoint is not ready.
+// This ensures the UI remains functional for development and testing.
 const calculatePayment = (price: number, downPayment: number, term: number, rate: number) => {
   const loanAmount = price - downPayment;
   if (loanAmount <= 0) return { monthlyPayment: 0, loanAmount };
@@ -9,6 +10,7 @@ const calculatePayment = (price: number, downPayment: number, term: number, rate
   const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term));
   return { monthlyPayment, loanAmount };
 };
+
 
 const InstallmentCalculator: React.FC = () => {
   const [vehiclePrice, setVehiclePrice] = useState('50000');
