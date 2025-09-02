@@ -1,6 +1,14 @@
 import axios from 'axios';
 
 // Define the structure of a Vehicle object for the frontend
+export interface Bid {
+  id: string;
+  amount: number;
+  created_at: string;
+  user_id: string;
+  user_full_name?: string;
+}
+
 export interface Vehicle {
   id: string;
   vin: string;
@@ -73,6 +81,27 @@ export const createListing = async (listingData: any): Promise<Vehicle> => {
 export const fetchVehicleById = async (vehicleId: string): Promise<Vehicle> => {
   const response = await apiClient.get(`/inventory/${vehicleId}`);
   return response.data;
+};
+
+/**
+ * Fetches the bid history for a specific vehicle.
+ * @param vehicleId The ID of the vehicle.
+ * @returns A promise that resolves to an array of Bid objects.
+ */
+export const fetchBidHistory = async (vehicleId: string): Promise<Bid[]> => {
+    const response = await apiClient.get(`/cars/${vehicleId}/bids`);
+    return response.data;
+};
+
+/**
+ * Posts a new bid for a specific vehicle.
+ * @param vehicleId The ID of the vehicle.
+ * @param amount The amount of the bid.
+ * @returns A promise that resolves to the newly created Bid object.
+ */
+export const postNewBid = async ({ vehicleId, amount }: { vehicleId: string, amount: number }): Promise<Bid> => {
+    const response = await apiClient.post(`/cars/${vehicleId}/bids`, { amount });
+    return response.data;
 };
 
 
