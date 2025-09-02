@@ -55,6 +55,49 @@ apiClient.interceptors.request.use(
 );
 
 /**
+ * Searches for vehicles based on a set of filters and sorting options.
+ * @param filters The filter state from the zustand store.
+ * @param sortOrder The current sort order.
+ * @returns A promise that resolves to the search response.
+ */
+export const searchVehicles = async ({ filters, sortOrder, pageParam = 1 }: { filters: any, sortOrder: string, pageParam?: number }) => {
+  const queryParams = {
+    sort: sortOrder,
+    make: filters.make,
+    model: filters.model,
+    price_min: filters.priceRange[0],
+    price_max: filters.priceRange[1],
+    year_min: filters.yearRange[0],
+    year_max: filters.yearRange[1],
+    bodyType: filters.bodyTypes.join(','),
+    fuelType: filters.fuelTypes.join(','),
+    page: pageParam,
+  };
+
+  // Remove empty params
+  const activeFilters = Object.fromEntries(
+    Object.entries(queryParams).filter(([, value]) => {
+      if (value === null || value === '' || value === 0) return false;
+      if (Array.isArray(value) && value.length === 0) return false;
+      return true;
+    })
+  );
+
+  const response = await apiClient.get('/vehicles/search', { params: activeFilters });
+  return response.data;
+};
+
+/**
+ * Fetches a list of all vehicles from the backend API.
+ * Used by the carousel for featured vehicles for now.
+ * @returns A promise that resolves to an array of Vehicle objects.
+ */
+export const fetchVehicles = async (): Promise<Vehicle[]> => {
+  const response = await apiClient.get('/inventory');
+  return response.data;
+};
+
+/**
  * Fetches a list of featured vehicles from the backend API.
  * @returns A promise that resolves to an array of Vehicle objects.
  */
