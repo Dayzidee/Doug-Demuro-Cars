@@ -1,13 +1,12 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchVehicles } from '../../../services/api';
+import { fetchFeaturedVehicles } from '../../../services/api';
 import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
 
 const FeaturedCarsCarousel = () => {
   const { data: vehicles, isLoading, error } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: fetchVehicles,
-    select: (data) => data.filter(v => v.is_featured).slice(0, 8),
+    queryKey: ['featuredVehicles'],
+    queryFn: fetchFeaturedVehicles,
   });
 
   const renderContent = () => {

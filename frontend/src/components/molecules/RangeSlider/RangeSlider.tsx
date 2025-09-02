@@ -1,5 +1,5 @@
 import React from "react";
-import Slider from "rc-slider";
+import Slider, { SliderProps } from "rc-slider";
 import "rc-slider/assets/index.css";
 import "./RangeSlider.css";
 
@@ -8,25 +8,24 @@ interface RangeSliderProps {
   max: number;
   value: [number, number];
   onChange: (value: [number, number] | number[]) => void;
-  formatTooltip?: (value: number) => string;
+  formatTooltip?: (value: number) => React.ReactNode;
 }
 
-const RangeSlider: React.FC<RangeSliderProps> = ({
-  min,
-  max,
-  value,
-  onChange,
-  formatTooltip,
-}) => {
-  // FIX: Create a handler function to resolve the type mismatch.
-  // The `rc-slider` component expects a function with the signature `(value: number | number[]) => void`.
-  // By creating this handler, we create a function that satisfies `rc-slider`'s requirement.
-  // Inside it, we safely call the original `onChange` prop with the value.
+const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, value, onChange, formatTooltip }) => {
   const handleChange = (newValue: number | number[]) => {
-    // We pass the newValue directly to the original onChange function.
-    // Since `newValue` (which will be a number[] in range mode) is compatible
-    // with the `[number, number] | number[]` type, this works perfectly.
     onChange(newValue as [number, number]);
+  };
+
+  const handleRender: SliderProps['handleRender'] = (node, props) => {
+    return (
+      <div className="relative group">
+        <div className="absolute bottom-full mb-sm left-1/2 -translate-x-1/2 px-sm py-xs bg-primary-deep-blue text-white text-xs rounded-md opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          {formatTooltip ? formatTooltip(props.value) : props.value}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-primary-deep-blue"></div>
+        </div>
+        {node}
+      </div>
+    );
   };
 
   return (
@@ -35,15 +34,15 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
       min={min}
       max={max}
       value={value}
-      // FIX: Pass our new handler function instead of the original prop.
       onChange={handleChange}
       allowCross={false}
-      handleStyle={[{ borderColor: "#111111" }, { borderColor: "#111111" }]}
-      trackStyle={{ backgroundColor: "#111111" }}
-      railStyle={{ backgroundColor: "#e5e7eb" }}
-      // The `formatTooltip` prop from rc-slider is called `tipFormatter`.
-      // If you intend to use it, you would pass it like this:
-      // tipFormatter={formatTooltip}
+      railStyle={{ backgroundColor: "rgba(255, 255, 255, 0.1)" /* bg-glass */ }}
+      trackStyle={{ background: "linear-gradient(135deg, #FF7A18 0%, #FFC837 100%)" /* secondary-gradient */ }}
+      handleStyle={[
+        { backgroundColor: 'white', border: '2px solid #FFC837' /* secondary-golden-yellow */ },
+        { backgroundColor: 'white', border: '2px solid #FFC837' /* secondary-golden-yellow */ },
+      ]}
+      handleRender={handleRender}
     />
   );
 };
