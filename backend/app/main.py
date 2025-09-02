@@ -21,6 +21,7 @@ def create_app():
     from .api import tools as tools_bp
     from .api import verification as verification_bp
     from .api.admin import verification as admin_verification_bp
+    from .api import auctions as auctions_bp
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(tools_bp.bp)
     app.register_blueprint(verification_bp.bp)
     app.register_blueprint(admin_verification_bp.bp)
+    app.register_blueprint(auctions_bp.bp)
 
     # Initialize database connection handling
     from .core import db
