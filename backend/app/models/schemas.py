@@ -62,6 +62,26 @@ class VehicleCreate(BaseModel):
         from_attributes = True
 
 
+class Bid(BaseModel):
+    """
+    Pydantic model for a single bid.
+    """
+    id: uuid.UUID
+    amount: float
+    created_at: str # Using str for simplicity, can be datetime
+    user_id: uuid.UUID
+    # To show user's name, we'd need a join in the query
+    user_full_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class BidCreate(BaseModel):
+    """
+    Pydantic model for creating a new bid.
+    """
+    amount: float
+
 class ProfileUpdate(BaseModel):
     """
     Pydantic model for validating the payload when updating a user profile.

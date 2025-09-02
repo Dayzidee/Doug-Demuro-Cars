@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchVehicleById, Vehicle } from '../../../services/api';
+import Bidding from '../../organisms/Bidding/Bidding';
 
 // Helper component to display a single detail item
 const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -61,13 +62,7 @@ const VehicleDetailPage = () => {
                     <div className="lg:col-span-2">
                         <div className="bg-white p-6 rounded-lg shadow-lg">
                             <img src={heroImageUrl} alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`} className="w-full h-auto object-cover rounded-lg mb-4" />
-                            {/* Bidding System Placeholder */}
-                            <div className="mt-6 border-t pt-6">
-                                <h2 className="text-2xl font-bold mb-4">Bidding</h2>
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                                    <p className="text-gray-500">Bidding system will be implemented here.</p>
-                                </div>
-                            </div>
+                            <Bidding vehicleId={vehicle.id} />
                         </div>
                     </div>
 
