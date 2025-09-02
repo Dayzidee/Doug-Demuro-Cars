@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
+import apiClient from '../../../services/api';
 
-// Reverting to local calculation as the backend endpoint is not ready.
-// This ensures the UI remains functional for development and testing.
-const calculatePayment = (price: number, downPayment: number, term: number, rate: number) => {
-  const loanAmount = price - downPayment;
-  if (loanAmount <= 0) return { monthlyPayment: 0, loanAmount };
-  const monthlyRate = rate / 100 / 12;
-  if (monthlyRate === 0) return { monthlyPayment: loanAmount / term, loanAmount };
-  const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term));
-  return { monthlyPayment, loanAmount };
-};
-
+// Type for the calculation result from the backend
+interface CalculationResult {
+  monthly_payment: number;
+  total_loan_amount: number;
+  total_interest_paid: number;
+  total_cost_of_loan: number;
+  total_cost_of_vehicle: number;
+}
 
 const InstallmentCalculator: React.FC = () => {
   const [vehiclePrice, setVehiclePrice] = useState('50000');
@@ -18,17 +16,29 @@ const InstallmentCalculator: React.FC = () => {
   const [loanTerm, setLoanTerm] = useState('72');
   const [interestRate, setInterestRate] = useState('5.9');
 
-  const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
+  const [result, setResult] = useState<CalculationResult | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { monthlyPayment: newPayment } = calculatePayment(
-      parseFloat(vehiclePrice) || 0,
-      parseFloat(downPayment) || 0,
-      parseInt(loanTerm, 10) || 0,
-      parseFloat(interestRate) || 0
-    );
-    setMonthlyPayment(newPayment);
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const response = await apiClient.post('/tools/calculate-payment', {
+        vehicle_price: parseFloat(vehiclePrice) || 0,
+        down_payment: parseFloat(downPayment) || 0,
+        loan_term_months: parseInt(loanTerm, 10) || 0,
+        annual_interest_rate: parseFloat(interestRate) || 0,
+      });
+      setResult(response.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyles = "w-full bg-glass border-b-2 border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:border-secondary-golden-yellow transition-colors";
@@ -55,17 +65,24 @@ const InstallmentCalculator: React.FC = () => {
             <input type="number" step="0.1" id="interestRate" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className={inputStyles} placeholder="e.g., 5.9" />
           </div>
         </div>
-        <button type="submit" className="w-full bg-primary-gradient hover:opacity-90 text-white font-bold py-sm rounded-lg transition-opacity">
-          Calculate Payment
+        <button type="submit" disabled={loading} className="w-full bg-primary-gradient hover:opacity-90 text-white font-bold py-sm rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+          {loading ? 'Calculating...' : 'Calculate Payment'}
         </button>
       </form>
 
-      {monthlyPayment !== null && (
+      {error && <div className="mt-md text-center text-red-400 bg-red-900/30 p-sm rounded-lg">{error}</div>}
+
+      {result && (
         <div className="mt-lg border-t-2 border-glass pt-lg">
           <h4 className="text-h4 text-center mb-md">Estimated Payment</h4>
-          <div className="text-center">
-            <span className="text-5xl font-accent text-secondary-golden-yellow">${monthlyPayment.toFixed(2)}</span>
+          <div className="text-center mb-md">
+            <span className="text-5xl font-accent text-secondary-golden-yellow">${result.monthly_payment.toFixed(2)}</span>
             <span className="text-neutral-metallic-silver/80">/month</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-md text-sm text-center">
+            <div className="bg-glass p-sm rounded-lg"><span className="block text-neutral-metallic-silver/70">Loan Amount</span><span className="font-semibold text-lg">${result.total_loan_amount.toFixed(2)}</span></div>
+            <div className="bg-glass p-sm rounded-lg"><span className="block text-neutral-metallic-silver/70">Total Interest</span><span className="font-semibold text-lg">${result.total_interest_paid.toFixed(2)}</span></div>
+            <div className="bg-glass p-sm rounded-lg col-span-1 sm:col-span-2"><span className="block text-neutral-metallic-silver/70">Total Vehicle Cost</span><span className="font-semibold text-lg">${result.total_cost_of_vehicle.toFixed(2)}</span></div>
           </div>
         </div>
       )}
