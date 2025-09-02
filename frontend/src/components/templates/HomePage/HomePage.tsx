@@ -15,8 +15,13 @@ const HomePage = () => {
       <TrustIndicators />
       <GalleryPreview />
       <DynamicPromoSection />
-      <section className="py-12 md:py-16 bg-gray-800">
-        <InstallmentCalculator />
+      <section className="py-2xl">
+        <div className="container mx-auto">
+          <h2 className="text-h2 font-heading uppercase text-center mb-xl">
+            Plan Your <span className="bg-clip-text text-transparent bg-primary-gradient">Financing</span>
+          </h2>
+          <InstallmentCalculator />
+        </div>
       </section>
     </>
   );
