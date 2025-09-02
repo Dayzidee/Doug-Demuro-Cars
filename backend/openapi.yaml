@@ -550,6 +550,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /auctions:
+    post:
+      tags:
+        - Auctions
+      summary: Create a new auction (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuctionCreate'
+      responses:
+        '201':
+          description: Auction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '403':
+          description: Forbidden
+
+  /auctions/live:
+    get:
+      tags:
+        - Auctions
+      summary: Get a list of currently live auctions
+      responses:
+        '200':
+          description: A list of live auctions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auction'
+
+  /auctions/{id}:
+    get:
+      tags:
+        - Auctions
+      summary: Get details for a specific auction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Auction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '404':
+          description: Auction not found
+
+  /auctions/{id}/bids:
+    post:
+      tags:
+        - Auctions
+      summary: Place a bid on an auction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BidCreate'
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+        '400':
+          description: Invalid bid (e.g., too low)
+        '403':
+          description: Forbidden (e.g., user not verified)
+
 # 2. Components (Reusable Schemas)
 components:
   schemas:
@@ -828,6 +920,77 @@ components:
         - address_verified
         - banking_verified
         - background_check_passed
+
+    Auction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        vehicle_id:
+          type: string
+          format: uuid
+        starting_bid:
+          type: number
+        current_bid:
+          type: number
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: ['scheduled', 'live', 'ended', 'cancelled']
+
+    AuctionCreate:
+      type: object
+      properties:
+        vehicle_id:
+          type: string
+          format: uuid
+        starting_bid:
+          type: number
+        reserve_price:
+          type: number
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+      required:
+        - vehicle_id
+        - starting_bid
+        - starts_at
+        - ends_at
+
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        auction_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        bid_time:
+          type: string
+          format: date-time
+
+    BidCreate:
+      type: object
+      properties:
+        amount:
+          type: number
+      required:
+        - amount
 
   securitySchemes:
     bearerAuth:
