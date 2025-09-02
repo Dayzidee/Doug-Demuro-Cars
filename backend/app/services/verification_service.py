@@ -157,23 +157,95 @@ class VerificationEngine:
 
     def admin_review_application(self, admin_id: str, app_id: str, checklist_data: dict) -> Dict[str, Any]:
         """
-        Allows an admin to review a verification application.
-
-        - Verifies admin permissions.
-        - Updates the application status and checklist in the database.
-        - Sends a notification to the user.
+        Allows an admin to submit a review checklist for a verification application.
+        This creates or updates the checklist record.
         """
-        # TODO:
-        # 1. Verify admin_id has admin privileges.
-        # 2. Find the application by app_id.
-        # 3. Create/update verification_checklist record.
-        # 4. Update verification_applications status.
-        # 5. Update profiles table with new verification_tier if approved.
-        # 6. Send notification to the user.
-        print(f"Admin {admin_id} reviewing application {app_id} with data: {checklist_data}")
+        supabase = get_supabase()
 
-        # Placeholder response
-        return {"application_id": app_id, "status": "under_review"}
+        # 1. Ensure the application exists
+        app_response = supabase.table('verification_applications').select('id').eq('id', app_id).single().execute()
+        if not app_response.data:
+            raise ValueError(f"Application with id {app_id} not found.")
+
+        # 2. Prepare and upsert the checklist data
+        checklist_record = {
+            "application_id": app_id,
+            "admin_id": admin_id,
+            "identity_verified": checklist_data.get('identity_verified', False),
+            "income_verified": checklist_data.get('income_verified', False),
+            "address_verified": checklist_data.get('address_verified', False),
+            "banking_verified": checklist_data.get('banking_verified', False),
+            "background_check_passed": checklist_data.get('background_check_passed', False),
+            "notes": checklist_data.get('notes'),
+            "completed_at": "now()"
+        }
+
+        # Upsert into the checklist table. If a record for this application_id exists, it's updated.
+        # Otherwise, it's created.
+        upsert_response = supabase.table('verification_checklist').upsert(checklist_record).execute()
+
+        if not upsert_response.data:
+            raise Exception("Failed to create or update verification checklist record.")
+
+        # Note: This step does not change the application status itself.
+        # That is handled by the approve/reject endpoints.
+        return upsert_response.data[0]
+
+    def approve_application(self, app_id: str) -> Dict[str, Any]:
+        """
+        Approves a verification application.
+        - Ensures a checklist exists.
+        - Updates application status to 'approved'.
+        - Updates the user's profile with the new verification tier.
+        """
+        supabase = get_supabase()
+
+        # 1. Ensure a checklist exists for this application
+        checklist_response = supabase.table('verification_checklist').select('id').eq('application_id', app_id).single().execute()
+        if not checklist_response.data:
+            raise ValueError(f"Cannot approve application {app_id}: a review checklist must be completed first.")
+
+        # 2. Get application type to determine the new tier and user_id
+        app_response = supabase.table('verification_applications').select('user_id, application_type').eq('id', app_id).single().execute()
+        if not app_response.data:
+            raise ValueError(f"Application {app_id} not found.")
+
+        user_id = app_response.data['user_id']
+        new_tier = app_response.data['application_type'] # 'basic' or 'premium'
+
+        # 3. Update the user's profile
+        supabase.table('profiles') \
+            .update({'verification_tier': new_tier, 'verification_status': f'{new_tier}_verified'}) \
+            .eq('id', user_id) \
+            .execute()
+
+        # 4. Update the application status
+        update_response = supabase.table('verification_applications') \
+            .update({'status': 'approved', 'reviewed_at': 'now()'}) \
+            .eq('id', app_id) \
+            .execute()
+
+        if not update_response.data:
+            raise Exception("Failed to approve application.")
+
+        return update_response.data[0]
+
+    def reject_application(self, app_id: str, reason: str) -> Dict[str, Any]:
+        """
+        Rejects a verification application.
+        """
+        supabase = get_supabase()
+        update_data = {'status': 'rejected', 'rejection_reason': reason, 'reviewed_at': 'now()'}
+
+        response = supabase.table('verification_applications') \
+            .update(update_data) \
+            .eq('id', app_id) \
+            .execute()
+
+        if not response.data:
+            raise Exception("Failed to reject application.")
+
+        return response.data[0]
 
     def get_user_access_level(self, user_id: str) -> Dict[str, Any]:
         """
