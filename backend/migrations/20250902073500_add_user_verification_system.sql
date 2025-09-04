@@ -1,7 +1,14 @@
+-- Create custom ENUM types for verification system
+CREATE TYPE verification_status_enum AS ENUM ('unverified', 'pending', 'basic_verified', 'premium_verified', 'suspended', 'deactivated');
+CREATE TYPE verification_tier_enum AS ENUM ('none', 'basic', 'premium');
+CREATE TYPE application_status_enum AS ENUM ('draft', 'submitted', 'under_review', 'approved', 'rejected', 'appealing');
+CREATE TYPE document_type_enum AS ENUM ('government_id', 'proof_of_income', 'bank_statement', 'insurance_proof', 'business_license', 'other');
+CREATE TYPE appeal_status_enum AS ENUM ('submitted', 'under_review', 'approved', 'rejected');
+
 -- Enhanced user profiles with verification tiers
 ALTER TABLE profiles
-    ADD COLUMN verification_status text CHECK (verification_status IN ('unverified', 'pending', 'basic_verified', 'premium_verified', 'suspended', 'deactivated')) DEFAULT 'unverified',
-    ADD COLUMN verification_tier text CHECK (verification_tier IN ('none', 'basic', 'premium')) DEFAULT 'none',
+    ADD COLUMN verification_status verification_status_enum DEFAULT 'unverified',
+    ADD COLUMN verification_tier verification_tier_enum DEFAULT 'none',
     ADD COLUMN suspension_reason text,
     ADD COLUMN suspension_ends_at timestamptz,
     ADD COLUMN deactivated_at timestamptz,
@@ -13,8 +20,8 @@ ALTER TABLE profiles
 CREATE TABLE verification_applications (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES profiles(id),
-    application_type text CHECK (application_type IN ('basic', 'premium')) NOT NULL,
-    status text CHECK (status IN ('draft', 'submitted', 'under_review', 'approved', 'rejected', 'appealing')) DEFAULT 'draft',
+    application_type verification_tier_enum NOT NULL,
+    status application_status_enum DEFAULT 'draft',
     submitted_at timestamptz,
     reviewed_at timestamptz,
     reviewed_by uuid REFERENCES profiles(id),
@@ -28,7 +35,7 @@ CREATE TABLE verification_applications (
 CREATE TABLE verification_documents (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     application_id uuid REFERENCES verification_applications(id),
-    document_type text CHECK (document_type IN ('government_id', 'proof_of_income', 'bank_statement', 'insurance_proof', 'business_license', 'other')) NOT NULL,
+    document_type document_type_enum NOT NULL,
     file_path text NOT NULL,
     file_name text NOT NULL,
     file_size bigint,
@@ -60,7 +67,7 @@ CREATE TABLE verification_appeals (
     user_id uuid REFERENCES profiles(id),
     appeal_reason text NOT NULL,
     additional_documents jsonb,
-    status text CHECK (status IN ('submitted', 'under_review', 'approved', 'rejected')) DEFAULT 'submitted',
+    status appeal_status_enum DEFAULT 'submitted',
     reviewed_by uuid REFERENCES profiles(id),
     reviewed_at timestamptz,
     admin_response text,

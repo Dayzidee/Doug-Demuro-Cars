@@ -1,3 +1,6 @@
+-- Create custom ENUM types for auction system
+CREATE TYPE auction_status_enum AS ENUM ('scheduled', 'live', 'ended', 'cancelled');
+
 -- Auction-specific tables
 CREATE TABLE auctions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,9 +11,9 @@ CREATE TABLE auctions (
     bid_count integer DEFAULT 0,
     starts_at timestamptz NOT NULL,
     ends_at timestamptz NOT NULL,
-    status text CHECK (status IN ('scheduled', 'live', 'ended', 'cancelled')),
+    status auction_status_enum,
     auto_extend_minutes integer DEFAULT 5,
-    min_verification_tier text CHECK (min_verification_tier IN ('none', 'basic', 'premium')) DEFAULT 'basic',
+    min_verification_tier verification_tier_enum DEFAULT 'basic',
     created_at timestamptz DEFAULT now()
 );
 
@@ -24,7 +27,7 @@ CREATE TABLE bids (
     bid_time timestamptz DEFAULT now(),
     ip_address inet,
     user_agent text,
-    verification_tier text CHECK (verification_tier IN ('basic', 'premium')) NOT NULL
+    verification_tier verification_tier_enum NOT NULL
 );
 
 CREATE TABLE auction_watchers (

@@ -6,18 +6,37 @@ class AuctionEngine:
     Handles the business logic for the real-time auction system.
     """
 
-    def create_auction(self, admin_id: str, auction_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_auction(self, auction_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new auction. Admin only.
         - Validates vehicle exists and is eligible for auction.
         - Creates a new record in the 'auctions' table.
         """
-        # TODO:
-        # 1. Verify admin_id has admin privileges (done in decorator).
-        # 2. Validate vehicle_id exists and is auction_eligible.
-        # 3. Insert into 'auctions' table.
-        print(f"Admin {admin_id} creating auction with data: {auction_data}")
-        return {"id": "new-auction-uuid", "status": "scheduled", **auction_data}
+        supabase = get_supabase()
+        vehicle_id = auction_data.get('vehicle_id')
+        if not vehicle_id:
+            raise ValueError("vehicle_id is required to create an auction.")
+
+        # 1. Validate vehicle exists and is not already in an active auction.
+        # This is a simplified check. A real implementation might check for overlapping auction times.
+        vehicle_response = supabase.table('vehicles').select('id, status').eq('id', vehicle_id).single().execute()
+        if not vehicle_response.data:
+            raise ValueError(f"Vehicle with id {vehicle_id} not found.")
+
+        if vehicle_response.data['status'] != 'Available':
+             raise ValueError(f"Vehicle {vehicle_id} is not available for auction. Current status: {vehicle_response.data['status']}")
+
+        # 2. Insert into 'auctions' table.
+        # The data is taken from the request body, which should match the AuctionCreate schema.
+        insert_response = supabase.table('auctions').insert(auction_data).execute()
+
+        if not insert_response.data:
+            raise Exception("Failed to create auction record.")
+
+        # 3. Optionally, update the vehicle's status to 'Pending' or 'In-auction'
+        supabase.table('vehicles').update({'status': 'Pending'}).eq('id', vehicle_id).execute()
+
+        return insert_response.data[0]
 
     def get_live_auctions(self) -> List[Dict[str, Any]]:
         """
@@ -45,18 +64,3 @@ class AuctionEngine:
             raise ValueError(f"Auction with id {auction_id} not found.")
 
         return response.data
-
-    def place_bid(self, user_id: str, auction_id: str, amount: float) -> Dict[str, Any]:
-        """
-        Places a bid on an auction for a verified user.
-        """
-        # TODO: Implement the complex bidding logic:
-        # 1. Check user's verification_tier against auction's min_verification_tier.
-        # 2. Check if auction status is 'live'.
-        # 3. Check if bid 'amount' is higher than the current_bid.
-        # 4. In a transaction:
-        #    a. Insert the new bid into the 'bids' table.
-        #    b. Update the 'current_bid' and 'bid_count' in the 'auctions' table.
-        # 5. Emit a 'bid_placed' event to a Supabase Realtime channel.
-        print(f"User {user_id} placing bid of {amount} on auction {auction_id}")
-        return {"id": "new-bid-uuid", "auction_id": auction_id, "user_id": user_id, "amount": amount}
