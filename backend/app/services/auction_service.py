@@ -64,3 +64,60 @@ class AuctionEngine:
             raise ValueError(f"Auction with id {auction_id} not found.")
 
         return response.data
+
+    def place_bid(self, user_id: str, auction_id: str, amount: float) -> Dict[str, Any]:
+        """
+        Places a bid on an auction for a verified user.
+        """
+        supabase = get_supabase()
+
+        # TODO: This entire method should be executed within a database transaction
+        # to prevent race conditions. This can be achieved by moving the logic
+        # into a PostgreSQL function and calling it via RPC.
+
+        # 1. Get current auction state and user verification tier
+        auction = self.get_auction(auction_id)
+
+        user_profile = supabase.table('profiles').select('verification_tier').eq('id', user_id).single().execute().data
+        if not user_profile:
+            raise ValueError("User profile not found.")
+
+        # 2. Perform validations
+        if auction.get('status') != 'live':
+            raise ValueError("Bids can only be placed on live auctions.")
+
+        if amount <= auction.get('current_bid', 0):
+            raise ValueError(f"Bid amount must be greater than the current bid of {auction.get('current_bid', 0)}.")
+
+        tier_map = {'none': 0, 'basic': 1, 'premium': 2}
+        user_tier_level = tier_map.get(user_profile.get('verification_tier'), 0)
+        min_tier_level = tier_map.get(auction.get('min_verification_tier'), 1)
+
+        if user_tier_level < min_tier_level:
+            raise ValueError(f"User verification tier does not meet the minimum requirement for this auction.")
+
+        # 3. Insert the new bid
+        bid_data = {
+            "auction_id": auction_id,
+            "user_id": user_id,
+            "amount": amount,
+            "verification_tier": user_profile.get('verification_tier')
+        }
+        insert_response = supabase.table('bids').insert(bid_data).execute()
+        if not insert_response.data:
+            raise Exception("Failed to place bid.")
+
+        new_bid = insert_response.data[0]
+
+        # 4. Update the auction's current bid and bid count
+        supabase.table('auctions') \
+            .update({
+                'current_bid': amount,
+                'bid_count': auction.get('bid_count', 0) + 1
+            }) \
+            .eq('id', auction_id) \
+            .execute()
+
+        # TODO: 5. Emit a 'bid_placed' event to a Supabase Realtime channel.
+
+        return new_bid
