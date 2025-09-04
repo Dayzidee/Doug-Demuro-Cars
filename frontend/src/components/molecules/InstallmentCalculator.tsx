@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import apiClient  from "../../services/api";
-
 
 // Type for the calculation result from the backend
 interface CalculationResult {
