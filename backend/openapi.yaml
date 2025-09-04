@@ -290,6 +290,358 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
 
+  /verification/applications:
+    post:
+      tags:
+        - User Verification
+      summary: Submit a new verification application
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationApplicationCreate'
+      responses:
+        '201':
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationApplication'
+        '400':
+          description: Invalid input or user not eligible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /verification/applications/{id}:
+    get:
+      tags:
+        - User Verification
+      summary: Get the status of a verification application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationApplication'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /verification/documents/{app_id}:
+    post:
+      tags:
+        - User Verification
+      summary: Upload a document for a verification application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document_type:
+                  type: string
+                  enum: ['government_id', 'proof_of_income', 'bank_statement', 'insurance_proof', 'business_license', 'other']
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationDocument'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /verification/appeals/{app_id}:
+    post:
+      tags:
+        - User Verification
+      summary: Submit an appeal for a rejected application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationAppealCreate'
+      responses:
+        '201':
+          description: Appeal submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationAppeal'
+        '400':
+          description: Invalid input or application not eligible for appeal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/verification/pending:
+    get:
+      tags:
+        - Admin Verification
+      summary: Get a list of pending verification applications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of pending applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VerificationApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/verification/{id}/review:
+    post:
+      tags:
+        - Admin Verification
+      summary: Review a verification application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminVerificationReview'
+      responses:
+        '200':
+          description: Review submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationApplication'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/verification/{id}/approve:
+    post:
+      tags:
+        - Admin Verification
+      summary: Approve a verification application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Application approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/verification/{id}/reject:
+    post:
+      tags:
+        - Admin Verification
+      summary: Reject a verification application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejection_reason:
+                  type: string
+              required:
+                - rejection_reason
+      responses:
+        '200':
+          description: Application rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auctions:
+    post:
+      tags:
+        - Auctions
+      summary: Create a new auction (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuctionCreate'
+      responses:
+        '201':
+          description: Auction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '403':
+          description: Forbidden
+
+  /auctions/live:
+    get:
+      tags:
+        - Auctions
+      summary: Get a list of currently live auctions
+      responses:
+        '200':
+          description: A list of live auctions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auction'
+
+  /auctions/{id}:
+    get:
+      tags:
+        - Auctions
+      summary: Get details for a specific auction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Auction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '404':
+          description: Auction not found
+
+  /auctions/{id}/bids:
+    post:
+      tags:
+        - Auctions
+      summary: Place a bid on an auction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BidCreate'
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+        '400':
+          description: Invalid bid (e.g., too low)
+        '403':
+          description: Forbidden (e.g., user not verified)
+
 # 2. Components (Reusable Schemas)
 components:
   schemas:
@@ -440,6 +792,205 @@ components:
           type: string
           enum: ['Available', 'Sold', 'Pending', 'Reserved', 'In-maintenance']
       # ... etc.
+
+    VerificationApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        application_type:
+          type: string
+          enum: ['basic', 'premium']
+        status:
+          type: string
+          enum: ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'appealing']
+        submitted_at:
+          type: string
+          format: date-time
+        reviewed_at:
+          type: string
+          format: date-time
+        rejection_reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - user_id
+        - application_type
+        - status
+        - created_at
+
+    VerificationApplicationCreate:
+      type: object
+      properties:
+        application_type:
+          type: string
+          enum: ['basic', 'premium']
+      required:
+        - application_type
+
+    VerificationDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        application_id:
+          type: string
+          format: uuid
+        document_type:
+          type: string
+          enum: ['government_id', 'proof_of_income', 'bank_statement', 'insurance_proof', 'business_license', 'other']
+        file_name:
+          type: string
+        file_size:
+          type: integer
+        mime_type:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - application_id
+        - document_type
+        - file_name
+        - uploaded_at
+
+    VerificationAppeal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        application_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        appeal_reason:
+          type: string
+        status:
+          type: string
+          enum: ['submitted', 'under_review', 'approved', 'rejected']
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - application_id
+        - user_id
+        - appeal_reason
+        - status
+        - created_at
+
+    VerificationAppealCreate:
+      type: object
+      properties:
+        appeal_reason:
+          type: string
+      required:
+        - appeal_reason
+
+    AdminVerificationReview:
+      type: object
+      properties:
+        identity_verified:
+          type: boolean
+        income_verified:
+          type: boolean
+        address_verified:
+          type: boolean
+        banking_verified:
+          type: boolean
+        background_check_passed:
+          type: boolean
+        notes:
+          type: string
+      required:
+        - identity_verified
+        - income_verified
+        - address_verified
+        - banking_verified
+        - background_check_passed
+
+    Auction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        vehicle_id:
+          type: string
+          format: uuid
+        starting_bid:
+          type: number
+        current_bid:
+          type: number
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: ['scheduled', 'live', 'ended', 'cancelled']
+
+    AuctionCreate:
+      type: object
+      properties:
+        vehicle_id:
+          type: string
+          format: uuid
+        starting_bid:
+          type: number
+        reserve_price:
+          type: number
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+      required:
+        - vehicle_id
+        - starting_bid
+        - starts_at
+        - ends_at
+
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        auction_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        bid_time:
+          type: string
+          format: date-time
+
+    BidCreate:
+      type: object
+      properties:
+        amount:
+          type: number
+      required:
+        - amount
 
   securitySchemes:
     bearerAuth:
