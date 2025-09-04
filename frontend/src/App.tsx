@@ -7,6 +7,9 @@ import SellPage from './components/templates/SellPage/SellPage';
 import DashboardLayout from './components/templates/DashboardPage/DashboardLayout';
 import DashboardOverview from './components/templates/DashboardPage/DashboardOverview';
 import DashboardSettings from './components/templates/DashboardPage/DashboardSettings';
+import DashboardBids from './components/templates/DashboardPage/DashboardBids';
+import DashboardWatchlist from './components/templates/DashboardPage/DashboardWatchlist';
+import DashboardSelling from './components/templates/DashboardPage/DashboardSelling';
 import InventoryPage from './components/templates/InventoryPage/InventoryPage';
 import VehicleDetailPage from './components/templates/VehicleDetailPage/VehicleDetailPage';
 import AdminPromotionsPage from './components/templates/AdminPromotionsPage/AdminPromotionsPage';
@@ -14,7 +17,7 @@ import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/molecules/ProtectedRoute';
 import AdminProtectedRoute from './components/molecules/AdminProtectedRoute';
 
-// Placeholder component for other dashboard sections
+// Placeholder component for dashboard sections that will be built in subsequent steps
 const PlaceholderComponent = ({ title }: { title: string }) => (
   <div>
     <h1 className="text-h2 font-heading">{title}</h1>
@@ -39,9 +42,9 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardOverview />} />
-                <Route path="bids" element={<PlaceholderComponent title="My Bids" />} />
-                <Route path="watchlist" element={<PlaceholderComponent title="Watchlist" />} />
-                <Route path="selling" element={<PlaceholderComponent title="Selling Center" />} />
+                <Route path="bids" element={<DashboardBids />} />
+                <Route path="watchlist" element={<DashboardWatchlist />} />
+                <Route path="selling" element={<DashboardSelling />} />
                 <Route path="settings" element={<DashboardSettings />} />
               </Route>
             </Route>

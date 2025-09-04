@@ -8,7 +8,6 @@ interface FilterState {
   yearRange: [number, number];
   bodyTypes: string[];
   fuelTypes: string[];
-  sortOrder: string;
 
   // Actions to update the state
   setMake: (make: string) => void;
@@ -17,7 +16,6 @@ interface FilterState {
   setYearRange: (range: [number, number]) => void;
   toggleBodyType: (bodyType: string) => void;
   toggleFuelType: (fuelType: string) => void;
-  setSortOrder: (order: string) => void;
 
   // A comprehensive reset action
   resetFilters: () => void;
@@ -31,7 +29,6 @@ const initialState = {
   yearRange: [2000, new Date().getFullYear()] as [number, number],
   bodyTypes: [],
   fuelTypes: [],
-  sortOrder: 'price_asc', // Default sort order
 };
 
 // Create the Zustand store
@@ -42,7 +39,6 @@ export const useFilterStore = create<FilterState>((set) => ({
   setModel: (model) => set({ model }),
   setPriceRange: (range) => set({ priceRange: range }),
   setYearRange: (range) => set({ yearRange: range }),
-  setSortOrder: (order) => set({ sortOrder: order }),
 
   toggleBodyType: (bodyType) =>
     set((state) => ({

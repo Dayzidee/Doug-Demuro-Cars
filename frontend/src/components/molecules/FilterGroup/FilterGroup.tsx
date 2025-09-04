@@ -16,14 +16,14 @@ interface FilterGroupProps {
 const FilterGroup: React.FC<FilterGroupProps> = ({ title, options, selectedValues, onChange, counts }) => {
   return (
     <div>
-      <h3 className="font-heading text-lg mb-sm text-neutral-metallic-silver">{title}</h3>
-      <div className="space-y-sm">
+      <h3 className="font-semibold mb-2 text-charcoal">{title}</h3>
+      <div className="space-y-2">
         {options.map((option) => (
-          <label key={option.value} className="flex items-center justify-between cursor-pointer text-neutral-metallic-silver/80 hover:text-neutral-metallic-silver transition-colors">
-            <div className="flex items-center space-x-sm">
+          <label key={option.value} className="flex items-center justify-between cursor-pointer text-gray-700 hover:text-charcoal">
+            <div className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-glass bg-glass text-secondary-golden-yellow focus:ring-secondary-golden-yellow focus:ring-offset-0"
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 value={option.value}
                 checked={selectedValues.includes(option.value)}
                 onChange={() => onChange(option.value)}
@@ -31,7 +31,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({ title, options, selectedValue
               <span>{option.label}</span>
             </div>
             {counts && (
-              <span className="text-xs text-primary-deep-blue bg-secondary-golden-yellow px-sm py-xs rounded-full font-bold">
+              <span className="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
                 {counts[option.value] || 0}
               </span>
             )}
