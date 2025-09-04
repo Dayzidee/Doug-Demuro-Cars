@@ -8,23 +8,13 @@ interface UserProfile {
   role: 'customer' | 'staff' | 'manager' | 'admin';
 }
 
-import apiClient from '../services/api';
-
-// Define the shape for registration data
-interface RegisterData {
-    full_name: string;
-    email: string;
-    password: string;
-}
-
 // Define the shape of the context data
 interface AuthContextType {
   isAuthenticated: boolean;
   user: UserProfile | null;
-  login: (token: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (token: string) => Promise<void>; // Login now takes a token
   logout: () => void;
-  isLoading: boolean;
+  isLoading: boolean; // To handle the initial auth check
 }
 
 // Create the context
@@ -80,17 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const register = async (data: RegisterData) => {
-    const response = await apiClient.post('/auth/register', data);
-    const { token } = response.data;
-    await login(token);
-  };
-
   const value = {
     isAuthenticated: !!user,
     user,
     login,
-    register,
     logout,
     isLoading
   };
