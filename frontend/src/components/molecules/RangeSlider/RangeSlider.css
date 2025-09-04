@@ -1,15 +1,19 @@
-/* Custom styles for rc-slider size and interaction */
+/* Custom styles for rc-slider to match the project's design system */
 .rc-slider-rail {
+  background-color: #e5e7eb; /* Cool Gray 200 */
   height: 6px;
   border-radius: 3px;
 }
 
 .rc-slider-track {
+  background-color: #111111; /* --charcoal */
   height: 6px;
   border-radius: 3px;
 }
 
 .rc-slider-handle {
+  border: 2px solid #111111; /* --charcoal */
+  background-color: white;
   opacity: 1;
   width: 20px;
   height: 20px;
@@ -21,5 +25,6 @@
 .rc-slider-handle:hover,
 .rc-slider-handle-dragging.rc-slider-handle-dragging,
 .rc-slider-handle:focus-visible {
-  box-shadow: 0 0 0 5px rgba(255, 200, 55, 0.3); /* secondary-golden-yellow with alpha */
+  box-shadow: 0 0 0 5px rgba(17, 17, 17, 0.2); /* --charcoal with alpha */
+  border-color: #0D1B2A; /* Dark Blue from primary gradient */
 }
