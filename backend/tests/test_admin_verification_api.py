@@ -171,24 +171,6 @@ def test_approve_application_success(client, mock_supabase_client):
     (app_update_mock.update.return_value.eq.return_value
      .execute.return_value) = MagicMock(data=[{'status': 'approved'}])
 
-    # Use side_effect to return mocks in the correct order of table access
-    def table_side_effect(table_name):
-        if table_name == 'profiles':
-            # The decorator calls this first, then the service updates it
-            # To handle this, we can use a list of mocks for the 'profiles' table
-            # However, for simplicity, we assume the mock setup for role check is sufficient
-            # and the update call mock will be handled by re-assigning the mock object.
-            # A more robust solution is needed if this fails.
-            # Let's try assigning a side_effect list to the main mock object.
-            return profile_role_mock
-        if table_name == 'verification_checklist': return checklist_check_mock
-        if table_name == 'verification_applications': return app_details_mock
-        return MagicMock()
-
-    # This is still tricky. Let's try a different approach:
-    # We mock the return_value of table() to be a mock that itself has a side_effect based on the next call.
-    # This is getting too complex. The simplest robust pattern is to define the sequence.
-
     # Corrected robust approach:
     # The order of table access is: profiles, verification_checklist, verification_applications, profiles, verification_applications
     mock_supabase_client.table.side_effect = [
