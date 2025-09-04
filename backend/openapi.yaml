@@ -290,52 +290,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
 
-  /auctions/{id}:
-    get:
-      tags:
-        - Auctions
-      summary: Get details for a specific auction
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Auction details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Auction'
-        '404':
-          description: Auction not found
-
-  /auctions/{id}/bid-history:
-    get:
-      tags:
-        - Auctions
-      summary: Get the bid history for a specific auction
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: A list of bids for the auction, ordered by time
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Bid'
-        '404':
-          description: Auction not found
-
 # 2. Components (Reusable Schemas)
 components:
   schemas:
@@ -486,47 +440,6 @@ components:
           type: string
           enum: ['Available', 'Sold', 'Pending', 'Reserved', 'In-maintenance']
       # ... etc.
-
-    Auction:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        vehicle_id:
-          type: string
-          format: uuid
-        starting_bid:
-          type: number
-        current_bid:
-          type: number
-        starts_at:
-          type: string
-          format: date-time
-        ends_at:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum: ['scheduled', 'live', 'ended', 'cancelled']
-
-    Bid:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        auction_id:
-          type: string
-          format: uuid
-        user_id:
-          type: string
-          format: uuid
-        amount:
-          type: number
-        bid_time:
-          type: string
-          format: date-time
 
   securitySchemes:
     bearerAuth:
