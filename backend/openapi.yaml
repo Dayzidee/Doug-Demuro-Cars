@@ -610,6 +610,38 @@ paths:
         '404':
           description: Auction not found
 
+  /auctions/{id}/bids:
+    post:
+      tags:
+        - Auctions
+      summary: Place a bid on an auction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BidCreate'
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+        '400':
+          description: Invalid bid (e.g., too low)
+        '403':
+          description: Forbidden (e.g., user not verified)
+
 # 2. Components (Reusable Schemas)
 components:
   schemas:
@@ -933,6 +965,32 @@ components:
         - starting_bid
         - starts_at
         - ends_at
+
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        auction_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        bid_time:
+          type: string
+          format: date-time
+
+    BidCreate:
+      type: object
+      properties:
+        amount:
+          type: number
+      required:
+        - amount
 
   securitySchemes:
     bearerAuth:
