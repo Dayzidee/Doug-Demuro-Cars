@@ -3,6 +3,7 @@ import Layout from './components/organisms/Layout';
 import HomePage from './components/templates/HomePage/HomePage';
 import GalleryPage from './components/templates/GalleryPage/GalleryPage';
 import LoginPage from './components/templates/LoginPage/LoginPage';
+import SignUpPage from './components/templates/SignUpPage/SignUpPage';
 import SellPage from './components/templates/SellPage/SellPage';
 import DashboardLayout from './components/templates/DashboardPage/DashboardLayout';
 import DashboardOverview from './components/templates/DashboardPage/DashboardOverview';
@@ -37,6 +38,7 @@ function App() {
             <Route path="gallery" element={<GalleryPage />} />
             <Route path="sell" element={<SellPage />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignUpPage />} />
 
             {/* Protected Routes for standard users */}
             <Route element={<ProtectedRoute />}>
