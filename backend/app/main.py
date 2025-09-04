@@ -19,7 +19,6 @@ def create_app():
     from .api import offers as offers_bp
     from .api.admin import offers as admin_offers_bp
     from .api import tools as tools_bp
-    from .api import auctions as auctions_bp
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
@@ -30,7 +29,6 @@ def create_app():
     app.register_blueprint(offers_bp.bp)
     app.register_blueprint(admin_offers_bp.bp)
     app.register_blueprint(tools_bp.bp)
-    app.register_blueprint(auctions_bp.bp)
 
     # Initialize database connection handling
     from .core import db
