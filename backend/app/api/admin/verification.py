@@ -66,15 +66,3 @@ def reject_application(id):
         return jsonify(updated_app)
     except Exception as e:
         return jsonify({"message": "An unexpected error occurred", "error": str(e)}), 500
-
-@bp.route('/appeals', methods=['GET'])
-def get_pending_appeals():
-    """Endpoint for admins to get a list of pending appeals."""
-    # TODO: Implement admin-level logic
-    return jsonify({"message": "Get pending appeals endpoint"})
-
-@bp.route('/appeals/<uuid:id>/resolve', methods=['POST'])
-def resolve_appeal(id):
-    """Endpoint for admins to resolve an appeal."""
-    # TODO: Implement admin-level logic
-    return jsonify({"message": f"Resolve appeal {id} endpoint"})

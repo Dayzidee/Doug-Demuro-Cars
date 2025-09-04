@@ -2,12 +2,24 @@ from flask import Blueprint, request, jsonify
 
 bp = Blueprint('auctions', __name__, url_prefix='/auctions')
 
+from ..core.security import admin_required
+
 @bp.route('', methods=['POST'])
+@admin_required
 def create_auction():
     """Endpoint to create a new auction. Admin only."""
-    # TODO: Add @admin_required decorator
-    # TODO: Implement logic using AuctionEngine
-    return jsonify({"message": "Endpoint to create a new auction"}), 201
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "Request body is required"}), 400
+
+    engine = AuctionEngine()
+    try:
+        new_auction = engine.create_auction(auction_data=data)
+        return jsonify(new_auction), 201
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400 # e.g., vehicle not found or not available
+    except Exception as e:
+        return jsonify({"message": "An unexpected error occurred", "error": str(e)}), 500
 
 from ..services.auction_service import AuctionEngine
 
@@ -32,10 +44,3 @@ def get_auction(id):
         return jsonify({"message": str(e)}), 404
     except Exception as e:
         return jsonify({"message": "An unexpected error occurred", "error": str(e)}), 500
-
-@bp.route('/<uuid:id>/bids', methods=['POST'])
-def place_bid(id):
-    """Endpoint for a verified user to place a bid on an auction."""
-    # TODO: Add @auth_required decorator (with verification check)
-    # TODO: Implement logic using AuctionEngine
-    return jsonify({"message": f"Endpoint to place bid on auction {id}"}), 201
