@@ -25,7 +25,7 @@ type VehicleWithDetails = VehicleDetail & {
 const VehicleDetailPage = () => {
     const { id } = useParams<{ id: string }>();
 
-    const { data: vehicle, isLoading, error, isError } = useQuery<Vehicle>({
+    const { data: vehicle, isLoading, error, isError } = useQuery<VehicleDetail>({
         queryKey: ['vehicle', id],
         queryFn: () => fetchVehicleById(id!),
         enabled: !!id, // Only run the query if the id exists

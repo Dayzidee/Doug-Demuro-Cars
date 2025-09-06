@@ -34,6 +34,14 @@ export interface VehicleDetail {
   exterior_color: string;
   is_featured: boolean;
   hero_image_url?: string;
+  seller_notes: string;
+  known_flaws: string;
+  highlights: string[];
+  engine: string;
+  interior_color: string;
+  bid_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 
