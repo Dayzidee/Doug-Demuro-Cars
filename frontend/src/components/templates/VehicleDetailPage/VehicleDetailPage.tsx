@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchVehicleById, Vehicle } from '../../../services/api';
+import { fetchVehicleById, VehicleSummary, VehicleDetail } from '../../../services/api';
 import Bidding from '../../organisms/Bidding/Bidding';
 
 // Helper component to display a single detail item
@@ -11,6 +11,16 @@ const DetailItem = ({ label, value }: { label: string; value: React.ReactNode })
         <p className="text-md text-charcoal">{value || 'N/A'}</p>
     </div>
 );
+
+// Assuming the Vehicle type will be updated to include these fields
+type VehicleWithDetails = VehicleDetail & {
+  media?: { url: string }[];
+  highlights?: string[];
+  seller_notes?: string;
+  known_flaws?: string;
+  interior_color?: string;
+  engine?: string;
+};
 
 const VehicleDetailPage = () => {
     const { id } = useParams<{ id: string }>();

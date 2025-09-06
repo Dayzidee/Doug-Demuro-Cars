@@ -1,61 +1,84 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '../../../services/api';
-import { useFilterStore } from '../../../hooks/useFilterStore';
-import { Vehicle } from '../../../data/mockVehicleData';
-import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
-import FilterSidebar from '../../organisms/FilterSidebar/FilterSidebar';
+import { useInfiniteQuery } from "@tanstack/react-query";
+// FIX 1: Import the searchVehicles FUNCTION and the VehicleSummary TYPE
+import { searchVehicles, type VehicleSummary } from "../../../services/api";
+import { useFilterStore } from "../../../hooks/useFilterStore";
+import VehicleCard from "../../molecules/VehicleCard/VehicleCard";
+import FilterSidebar from "../../organisms/FilterSidebar/FilterSidebar";
+import SortDropdown from "../../molecules/SortDropdown/SortDropdown";
 
 // Define the shape of the API response
 interface VehicleSearchResponse {
-  data: Vehicle[];
-  facets: any; // Using 'any' for now, can be typed more strictly later
+  data: VehicleSummary[];
+  facets: any;
+  total: number;
+  hasMore: boolean;
 }
 
+const VehicleGridSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
+    {[...Array(6)].map((_, i) => (
+      <div
+        key={i}
+        className="bg-glass border border-glass rounded-xl shadow-lg h-96 animate-pulse"
+      ></div>
+    ))}
+  </div>
+);
+
 const InventoryPage = () => {
-  // Select the filter values from the store.
-  const filters = useFilterStore((state) => ({
-    make: state.make,
-    model: state.model,
-    priceRange: state.priceRange,
-    yearRange: state.yearRange,
-    bodyTypes: state.bodyTypes,
-    fuelTypes: state.fuelTypes,
-  }));
+  // FIX 2: Correctly select the state from the store and destructure it.
+  const {
+    make,
+    model,
+    priceRange,
+    yearRange,
+    bodyTypes,
+    fuelTypes,
+    sortOrder,
+  } = useFilterStore();
 
-  const { data, isLoading, isError, error } = useQuery<VehicleSearchResponse, Error>({
-    queryKey: ['vehicles', filters],
-    queryFn: async () => {
-      const queryParams: any = {
-        ...filters,
-        price_min: filters.priceRange[0],
-        price_max: filters.priceRange[1],
-        year_min: filters.yearRange[0],
-        year_max: filters.yearRange[1],
-      };
+  const filters = { make, model, priceRange, yearRange, bodyTypes, fuelTypes };
 
-      if (queryParams.bodyTypes.length > 0) queryParams.bodyType = queryParams.bodyTypes.join(',');
-      if (queryParams.fuelTypes.length > 0) queryParams.fuelType = queryParams.fuelTypes.join(',');
-
-      delete queryParams.priceRange;
-      delete queryParams.yearRange;
-      delete queryParams.bodyTypes;
-      delete queryParams.fuelTypes;
-
-      const activeFilters = Object.fromEntries(
-        Object.entries(queryParams).filter(([, value]) => value !== null && value !== '' && value !== 0 && (!Array.isArray(value) || value.length > 0))
-      );
-
-      const response = await apiClient.get('/vehicles/search', { params: activeFilters });
-      return response.data;
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteQuery<
+    VehicleSearchResponse,
+    Error,
+    VehicleSearchResponse, // Often the same as the first generic
+    (string | typeof filters | string)[], // Describes the queryKey array
+    number // Explicitly tell it that pageParam is a number
+  >({
+    queryKey: ["vehicles", filters, sortOrder],
+    // Now, inside here, TypeScript knows that pageParam is a number.
+    queryFn: ({ pageParam }) =>
+      searchVehicles({ filters, sortOrder, pageParam }), // No more error!
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.hasMore) {
+        return allPages.length + 1;
+      }
+      return undefined;
     },
   });
 
-  const vehicles = data?.data;
-  const facets = data?.facets;
+  const vehicles = data?.pages.flatMap((page) => page.data) ?? [];
+  const totalVehicles = data?.pages[0]?.total ?? 0;
+  const facets = data?.pages[0]?.facets;
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-heading mb-8">Vehicle Inventory</h1>
+    <div className="container mx-auto py-xl">
+      <h1 className="text-h1 font-heading uppercase text-center mb-xl">
+        <span className="bg-clip-text text-transparent bg-primary-gradient">
+          Vehicle
+        </span>{" "}
+        Inventory
+      </h1>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         <FilterSidebar facets={facets} isLoading={isLoading} />
@@ -70,9 +93,25 @@ const InventoryPage = () => {
                   <VehicleCard key={vehicle.id} vehicle={vehicle} />
                 ))
               ) : (
-                <p className="col-span-full">No vehicles found matching your criteria.</p>
+                <p className="text-center text-body-lg col-span-full mt-2xl">
+                  No vehicles found matching your criteria.
+                </p>
               )}
-            </div>
+
+              <div className="text-center mt-xl">
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={!hasNextPage || isFetchingNextPage}
+                  className="bg-primary-gradient hover:opacity-90 text-white font-bold py-sm px-lg rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isFetchingNextPage
+                    ? "Loading more..."
+                    : hasNextPage
+                    ? "Load More"
+                    : "Nothing more to load"}
+                </button>
+              </div>
+            </>
           )}
         </main>
       </div>

@@ -1,4 +1,6 @@
-import { create } from 'zustand';
+// src/hooks/useFilterStore.ts
+
+import { create } from "zustand";
 
 // Define the shape of the filter state and the actions to modify it
 interface FilterState {
@@ -9,6 +11,9 @@ interface FilterState {
   bodyTypes: string[];
   fuelTypes: string[];
 
+  // FIX 1: Add sortOrder to the state
+  sortOrder: string;
+
   // Actions to update the state
   setMake: (make: string) => void;
   setModel: (model: string) => void;
@@ -17,18 +22,22 @@ interface FilterState {
   toggleBodyType: (bodyType: string) => void;
   toggleFuelType: (fuelType: string) => void;
 
-  // A comprehensive reset action
+  // FIX 2: Add an action to set the sortOrder
+  setSortOrder: (order: string) => void;
+
   resetFilters: () => void;
 }
 
 // Define the initial state for the filters
 const initialState = {
-  make: '',
-  model: '',
+  make: "",
+  model: "",
   priceRange: [0, 200000] as [number, number],
   yearRange: [2000, new Date().getFullYear()] as [number, number],
   bodyTypes: [],
   fuelTypes: [],
+  // FIX 3: Set the default sortOrder
+  sortOrder: "price_asc",
 };
 
 // Create the Zustand store
@@ -54,5 +63,11 @@ export const useFilterStore = create<FilterState>((set) => ({
         : [...state.fuelTypes, fuelType],
     })),
 
+  // FIX 4: Implement the setSortOrder action
+  setSortOrder: (order) => set({ sortOrder: order }),
+
   resetFilters: () => set(initialState),
 }));
+
+// The default export is often omitted when the hook is named `use...`
+// export default useFilterStore;

@@ -9,7 +9,18 @@ export interface Bid {
   user_full_name?: string;
 }
 
-export interface Vehicle {
+export interface VehicleSummary {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  hero_image_url?: string;
+  // Notice it does NOT include vin, fuel_type, etc.
+}
+
+export interface VehicleDetail {
   id: string;
   vin: string;
   make: string;
@@ -24,6 +35,8 @@ export interface Vehicle {
   is_featured: boolean;
   hero_image_url?: string;
 }
+
+
 
 // The base URL will be proxied by the Vite development server.
 const API_BASE_URL = '/api/v1';
@@ -54,11 +67,52 @@ apiClient.interceptors.request.use(
   }
 );
 
+// FIX 2: ADD THE MISSING searchVehicles FUNCTION.
+// Place it logically with your other data-fetching functions.
+
+/**
+ * Searches for vehicles based on a set of filters and sorting options.
+ * @param filters The filter state from the zustand store.
+ * @param sortOrder The current sort order.
+ * @param pageParam The current page number for pagination.
+ * @returns A promise that resolves to the search response containing summaries.
+ */
+export const searchVehicles = async ({ filters, sortOrder, pageParam = 1 }: { filters: any, sortOrder: string, pageParam?: number }) => {
+  const queryParams = {
+    sort: sortOrder,
+    make: filters.make,
+    model: filters.model,
+    price_min: filters.priceRange[0],
+    price_max: filters.priceRange[1],
+    year_min: filters.yearRange[0],
+    year_max: filters.yearRange[1],
+    bodyType: filters.bodyTypes.join(','),
+    fuelType: filters.fuelTypes.join(','),
+    page: pageParam,
+  };
+
+  // Remove empty/default params to keep the URL clean
+  const activeFilters = Object.fromEntries(
+    Object.entries(queryParams).filter(([, value]) => {
+      if (value === null || value === '' || value === undefined) return false;
+      if (Array.isArray(value) && value.length === 0) return false;
+      // Add checks for default ranges if you want to exclude them
+      // if (key.includes('_min') && value === 0) return false;
+      return true;
+    })
+  );
+
+  const response = await apiClient.get('/vehicles/search', { params: activeFilters });
+  // Ensure the return type matches what InventoryPage expects
+  return response.data as { data: VehicleSummary[], hasMore: boolean, total: number, facets: any };
+};
+
+
 /**
  * Fetches a list of featured vehicles from the backend API.
  * @returns A promise that resolves to an array of Vehicle objects.
  */
-export const fetchFeaturedVehicles = async (): Promise<Vehicle[]> => {
+export const fetchFeaturedVehicles = async (): Promise<VehicleDetail[]> => {
   const response = await apiClient.get('/inventory/featured');
   return response.data;
 };
@@ -68,7 +122,7 @@ export const fetchFeaturedVehicles = async (): Promise<Vehicle[]> => {
  * @param listingData The data for the new listing.
  * @returns A promise that resolves to the newly created Vehicle object.
  */
-export const createListing = async (listingData: any): Promise<Vehicle> => {
+export const createListing = async (listingData: any): Promise<VehicleDetail> => {
   const response = await apiClient.post('/cars/sell', listingData);
   return response.data;
 };
@@ -78,7 +132,7 @@ export const createListing = async (listingData: any): Promise<Vehicle> => {
  * @param vehicleId The ID of the vehicle to fetch.
  * @returns A promise that resolves to a Vehicle object.
  */
-export const fetchVehicleById = async (vehicleId: string): Promise<Vehicle> => {
+export const fetchVehicleById = async (vehicleId: string): Promise<VehicleDetail> => {
   const response = await apiClient.get(`/inventory/${vehicleId}`);
   return response.data;
 };
