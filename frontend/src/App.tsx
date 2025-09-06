@@ -3,7 +3,9 @@ import Layout from './components/organisms/Layout';
 import HomePage from './components/templates/HomePage/HomePage';
 import GalleryPage from './components/templates/GalleryPage/GalleryPage';
 import LoginPage from './components/templates/LoginPage/LoginPage';
+import SignUpPage from './components/templates/SignUpPage/SignUpPage';
 import SellPage from './components/templates/SellPage/SellPage';
+import AuctionsPage from './components/templates/AuctionsPage/AuctionsPage';
 import DashboardLayout from './components/templates/DashboardPage/DashboardLayout';
 import DashboardOverview from './components/templates/DashboardPage/DashboardOverview';
 import DashboardSettings from './components/templates/DashboardPage/DashboardSettings';
@@ -17,14 +19,6 @@ import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/molecules/ProtectedRoute';
 import AdminProtectedRoute from './components/molecules/AdminProtectedRoute';
 
-// Placeholder component for dashboard sections that will be built in subsequent steps
-const PlaceholderComponent = ({ title }: { title: string }) => (
-  <div>
-    <h1 className="text-h2 font-heading">{title}</h1>
-    <p className="mt-md">This section is under construction.</p>
-  </div>
-);
-
 function App() {
   return (
     <AuthProvider>
@@ -35,8 +29,10 @@ function App() {
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="inventory/:id" element={<VehicleDetailPage />} />
             <Route path="gallery" element={<GalleryPage />} />
+            <Route path="auctions" element={<AuctionsPage />} />
             <Route path="sell" element={<SellPage />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignUpPage />} />
 
             {/* Protected Routes for standard users */}
             <Route element={<ProtectedRoute />}>

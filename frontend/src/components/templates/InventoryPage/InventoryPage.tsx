@@ -5,7 +5,6 @@ import VehicleCard from "../../molecules/VehicleCard/VehicleCard";
 import FilterSidebar from "../../organisms/FilterSidebar/FilterSidebar";
 import SortDropdown from "../../molecules/SortDropdown/SortDropdown";
 
-// Define the shape of the API response
 interface VehicleSearchResponse {
   data: VehicleSummary[];
   facets: any;
@@ -147,7 +146,7 @@ const InventoryPage = () => {
         Inventory
       </h1>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-lg items-start">
         <FilterSidebar facets={facets} isLoading={isLoading} />
 
         <main className="flex-1">

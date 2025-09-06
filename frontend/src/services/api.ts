@@ -166,5 +166,19 @@ export const postNewBid = async ({ vehicleId, amount }: { vehicleId: string, amo
     return response.data;
 };
 
+/**
+ * Searches for vehicles based on a query string.
+ * NOTE: This is a placeholder to fix a build error.
+ * @param query The search query.
+ * @returns A promise that resolves to an array of Vehicle objects.
+ */
+export const searchVehicles = async (query: string): Promise<Vehicle[]> => {
+  console.log('Placeholder search for:', query);
+  // In a real implementation, this would be:
+  // const response = await apiClient.get(`/inventory/search?q=${query}`);
+  // return response.data;
+  return Promise.resolve([]);
+};
+
 
 export default apiClient;

@@ -2,7 +2,16 @@ import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Layout() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-primary-deep-blue">
+        <p className="text-white text-xl">Loading application...</p>
+      </div>
+    );
+  }
+
   const hasAdminAccess = user?.role && ['admin', 'manager', 'staff'].includes(user.role);
 
   return (
