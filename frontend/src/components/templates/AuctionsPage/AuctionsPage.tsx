@@ -1,4 +1,3 @@
-import React from 'react';
 import AuctionCard, { AuctionItem } from '../../molecules/AuctionCard/AuctionCard';
 import { mockVehicleData } from '../../../data/mockVehicleData';
 

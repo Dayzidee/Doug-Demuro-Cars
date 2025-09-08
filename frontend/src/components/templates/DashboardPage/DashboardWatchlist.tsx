@@ -1,4 +1,3 @@
-import React from 'react';
 import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
 import { mockVehicleData } from '../../../data/mockVehicleData';
 

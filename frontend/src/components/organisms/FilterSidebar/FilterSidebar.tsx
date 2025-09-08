@@ -31,12 +31,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
     toggleBodyType, toggleFuelType, setPriceRange, setYearRange, resetFilters
   } = useFilterStore();
 
-  const inputStyles = "w-full bg-glass border-b-2 border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:border-secondary-golden-yellow transition-colors";
+  const inputStyles = "w-full bg-backgrounds-card p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md";
 
   return (
-    <aside className={`w-full lg:w-80 xl:w-96 p-lg bg-glass border border-glass rounded-xl shadow-lg h-fit transition-opacity ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+    <aside className={`w-full lg:w-80 xl:w-96 p-lg bg-glass border border-glass rounded-xl shadow-2xl backdrop-blur-md h-fit transition-opacity ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
       <div className="flex justify-between items-center mb-lg border-b border-glass pb-md">
-        <h2 className="text-h3 font-heading text-neutral-metallic-silver">Filters</h2>
+        <h2 className="text-h3 font-heading text-white">Filters</h2>
         <button onClick={resetFilters} className="text-sm text-neutral-metallic-silver/80 hover:text-white transition-colors" disabled={isLoading}>
           Reset All
         </button>
@@ -44,7 +44,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
 
       <div className="space-y-lg">
         <div>
-          <h3 className="font-heading text-lg mb-sm text-neutral-metallic-silver">Make</h3>
+          <label htmlFor="make-filter" className="font-heading text-lg mb-sm text-white block">Make</label>
           <input
             id="make-filter"
             type="text"
@@ -55,9 +55,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
             disabled={isLoading}
           />
         </div>
-        <hr className="border-glass" />
+
         <div>
-          <h3 className="font-heading text-lg mb-sm text-neutral-metallic-silver">Model</h3>
+          <label htmlFor="model-filter" className="font-heading text-lg mb-sm text-white block">Model</label>
           <input
             id="model-filter"
             type="text"
@@ -68,7 +68,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
             disabled={isLoading}
           />
         </div>
-        <hr className="border-glass" />
+
         <FilterGroup
           title="Body Type"
           options={bodyTypeOptions}
@@ -76,7 +76,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
           onChange={toggleBodyType}
           counts={facets?.bodyType}
         />
-        <hr className="border-glass" />
+
         <FilterGroup
           title="Fuel Type"
           options={fuelTypeOptions}
@@ -84,9 +84,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
           onChange={toggleFuelType}
           counts={facets?.fuelType}
         />
-        <hr className="border-glass" />
-        <div>
-          <h3 className="font-heading text-lg mb-md text-neutral-metallic-silver">Price Range</h3>
+
+        <div className="pt-md border-t border-glass">
+          <h3 className="font-heading text-lg my-md text-white">Price Range</h3>
           <RangeSlider
             min={0}
             max={200000}
@@ -99,9 +99,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ facets, isLoading }) => {
             <span>${priceRange[1].toLocaleString()}</span>
           </div>
         </div>
-        <hr className="border-glass" />
-        <div>
-          <h3 className="font-heading text-lg mb-md text-neutral-metallic-silver">Year</h3>
+
+        <div className="pt-md border-t border-glass">
+          <h3 className="font-heading text-lg my-md text-white">Year</h3>
            <RangeSlider
             min={2000}
             max={new Date().getFullYear()}
