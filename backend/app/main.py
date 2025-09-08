@@ -19,6 +19,7 @@ def create_app():
     from .api import offers as offers_bp
     from .api.admin import offers as admin_offers_bp
     from .api import tools as tools_bp
+
     app.register_blueprint(meta.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
