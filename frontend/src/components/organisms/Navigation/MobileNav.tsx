@@ -3,23 +3,41 @@ import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const navLinks = [
-    {
-      label: "Buy Cars",
-      path: "/inventory",
-      dropdown: ["All Inventory", "Luxury Cars", "Sports Cars", "Classic Cars", "SUVs", "Certified Pre-Owned"]
-    },
-    {
-      label: "Auctions",
-      path: "/auctions",
-      dropdown: ["Live Auctions", "Ending Soon", "Recently Sold", "Auction Calendar"]
-    },
-    {
-      label: "Promo Deals",
-      path: "/promos",
-      badge: "HOT",
-      dropdown: ["Daily Deals", "Giveaways", "Maintenance Specials"]
-    }
-  ];
+  {
+    label: "Buy Cars",
+    path: "/inventory",
+    dropdown: [
+      { label: "All Inventory", path: "/inventory" },
+      { label: "Luxury Cars", path: "/inventory?category=luxury" },
+      { label: "Sports Cars", path: "/inventory?category=sports" },
+    ]
+  },
+  {
+    label: "Auctions",
+    path: "/auctions",
+    dropdown: [
+      { label: "Live Auctions", path: "/auctions" },
+      { label: "Ending Soon", path: "/auctions?filter=ending-soon" },
+    ]
+  },
+  {
+    label: "Sell Your Car",
+    path: "/sell",
+    dropdown: [
+      { label: "Submit for Auction", path: "/sell" },
+      { label: "Get Valuation", path: "/sell/valuation" },
+    ]
+  },
+  {
+    label: "Promo Deals",
+    path: "/promos",
+    badge: "HOT",
+    dropdown: [
+      { label: "Daily Deals", path: "/promos" },
+      { label: "Giveaways", path: "/promos/giveaways" },
+    ]
+  }
+];
 
 interface MobileNavProps {
     isAuthenticated: boolean;
@@ -38,7 +56,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ isAuthenticated, hasAdminAccess }
       </button>
 
       <div className={`fixed inset-0 bg-primary-deep-blue/90 backdrop-blur-xl z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex flex-col items-center justify-center h-full space-y-10">
+        <div className="flex flex-col items-center justify-center h-full space-y-10 overflow-y-auto py-10">
             <nav className="flex flex-col items-center space-y-6 text-center">
                 {navLinks.map((link) => (
                 <div key={link.label} className="w-full">
@@ -47,8 +65,8 @@ const MobileNav: React.FC<MobileNavProps> = ({ isAuthenticated, hasAdminAccess }
                     </Link>
                     <div className="flex flex-col space-y-3 mt-3">
                         {link.dropdown.map((item) => (
-                            <Link key={item} to="#" onClick={toggleMenu} className="text-lg text-neutral-metallic-silver hover:text-white transition-colors">
-                                {item}
+                            <Link key={item.label} to={item.path} onClick={toggleMenu} className="text-lg text-neutral-metallic-silver hover:text-white transition-colors">
+                                {item.label}
                             </Link>
                         ))}
                     </div>

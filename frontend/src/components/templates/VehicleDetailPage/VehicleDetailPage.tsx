@@ -1,10 +1,11 @@
-import React from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchVehicleById, VehicleSummary, VehicleDetail } from '../../../services/api';
+import { fetchVehicleById, VehicleDetail } from '../../../services/api';
 import Bidding from '../../organisms/Bidding/Bidding';
 import MediaGallery from '../../organisms/MediaGallery/MediaGallery';
 import InstallmentCalculator from '../../molecules/InstallmentCalculator';
+import { CheckCircle2 } from 'lucide-react';
 
 // Helper component to display a single detail item
 const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -14,36 +15,59 @@ const DetailItem = ({ label, value }: { label: string; value: React.ReactNode })
   </div>
 );
 
-// Skeleton Loader for the VDP
+// --- Skeleton Loader ---
 const VDPSkeleton = () => (
   <div className="container mx-auto py-xl animate-pulse">
-    <div className="h-12 bg-glass rounded-md w-3/4 mb-md"></div>
-    <div className="h-8 bg-glass rounded-md w-1/4 mb-xl"></div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
       <div className="lg:col-span-2 space-y-lg">
-        <div className="bg-glass rounded-xl h-96"></div>
+        <div className="bg-glass rounded-xl h-[500px]"></div>
         <div className="bg-glass rounded-xl h-64"></div>
       </div>
       <div className="lg:col-span-1 space-y-lg">
-        <div className="bg-glass rounded-xl h-80"></div>
-        <div className="bg-glass rounded-xl h-48"></div>
+        <div className="bg-glass rounded-xl h-96"></div>
       </div>
     </div>
   </div>
 );
 
-// Assuming the Vehicle type will be updated to include these fields
-type VehicleWithDetails = VehicleDetail & {
-  media?: { url: string }[];
-  highlights?: string[];
-  seller_notes?: string;
-  known_flaws?: string;
-  interior_color?: string;
-  engine?: string;
-};
+// --- Tabbed Content Components ---
+const DetailsTab = ({ vehicle }: { vehicle: VehicleDetail }) => (
+    <div className="space-y-md">
+        <div className="grid grid-cols-2 gap-md">
+            <DetailItem label="Mileage" value={`${vehicle.mileage.toLocaleString()} mi`} />
+            <DetailItem label="Fuel Type" value={vehicle.fuel_type} />
+            <DetailItem label="Transmission" value={vehicle.transmission} />
+            <DetailItem label="Body Type" value={vehicle.body_type} />
+            <DetailItem label="Exterior Color" value={vehicle.exterior_color} />
+            <DetailItem label="Interior Color" value={vehicle.interior_color} />
+            <DetailItem label="Engine" value={vehicle.engine} />
+            <DetailItem label="VIN" value={vehicle.vin} />
+        </div>
+    </div>
+);
+
+const ConditionTab = ({ vehicle }: { vehicle: VehicleDetail }) => (
+    <div className="space-y-md">
+        <DetailItem label="Seller Notes" value={vehicle.seller_notes} />
+        <DetailItem label="Known Flaws" value={vehicle.known_flaws} />
+        <div>
+            <h3 className="text-md font-semibold text-neutral-metallic-silver/70 uppercase tracking-caption my-sm">Highlights</h3>
+            <ul className="space-y-sm text-neutral-metallic-silver/90">
+                {vehicle.highlights?.length ? vehicle.highlights.map((h, i) => (
+                    <li key={i} className="flex items-start gap-x-sm">
+                        <CheckCircle2 size={20} className="text-primary-electric-cyan flex-shrink-0 mt-1" />
+                        <span>{h}</span>
+                    </li>
+                )) : <li>No highlights provided.</li>}
+            </ul>
+        </div>
+    </div>
+);
+
 
 const VehicleDetailPage = () => {
     const { id } = useParams<{ id: string }>();
+    const [activeTab, setActiveTab] = useState('Details');
 
     const { data: vehicle, isLoading, error, isError } = useQuery<VehicleDetail>({
         queryKey: ['vehicle', id],
@@ -52,25 +76,24 @@ const VehicleDetailPage = () => {
     });
 
     if (isLoading) return <VDPSkeleton />;
+    if (isError) return <div className="container mx-auto py-xl text-center text-red-400">Error: {error.message}</div>;
+    if (!vehicle) return <div className="container mx-auto py-xl text-center">Vehicle not found.</div>;
 
-    if (isError) {
-        return <div className="container mx-auto py-xl text-center text-red-400">Error: {error.message}</div>;
-    }
-
-    if (!vehicle) {
-        return <div className="container mx-auto py-xl text-center">Vehicle not found.</div>;
-    }
-
-    // Placeholder data for the gallery until the API provides it
     const placeholderImages = [
         { url: 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
         { url: 'https://images.pexels.com/photos/2127733/pexels-photo-2127733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-        { url: 'https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-        { url: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
     ];
-
     const media = vehicle.media || placeholderImages;
-    const heroImageUrl = vehicle.hero_image_url || media[0]?.url || `https://via.placeholder.com/1200x600.png/0D1B2A/E5E5E5?text=${vehicle.year}+${vehicle.make}+${vehicle.model}`;
+    const heroImageUrl = vehicle.hero_image_url || media[0]?.url;
+
+    const TabButton = ({ tabName }: { tabName: string }) => (
+      <button
+        onClick={() => setActiveTab(tabName)}
+        className={`px-lg py-sm font-bold transition-colors text-lg ${activeTab === tabName ? 'border-b-2 border-secondary-golden-yellow text-white' : 'text-neutral-metallic-silver/70 hover:text-white'}`}
+      >
+          {tabName}
+      </button>
+    );
 
     return (
         <div className="container mx-auto py-xl">
@@ -79,19 +102,30 @@ const VehicleDetailPage = () => {
                 <p className="text-h3 font-accent text-secondary-golden-yellow">${vehicle.price.toLocaleString()}</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg items-start">
+                {/* Left Column */}
                 <div className="lg:col-span-2 space-y-lg">
                     <MediaGallery images={media} heroImageUrl={heroImageUrl} />
 
+                    {/* Information Tabs */}
                     <div className="bg-glass p-lg rounded-xl border border-glass">
-                        <h2 className="text-h3 font-heading mb-md">Financing Calculator</h2>
-                        <InstallmentCalculator />
+                        <div className="border-b border-glass mb-md">
+                            <nav className="-mb-px flex space-x-lg" aria-label="Tabs">
+                                <TabButton tabName="Details" />
+                                <TabButton tabName="Condition" />
+                                <TabButton tabName="Bidding" />
+                            </nav>
+                        </div>
+                        <div>
+                            {activeTab === 'Details' && <DetailsTab vehicle={vehicle} />}
+                            {activeTab === 'Condition' && <ConditionTab vehicle={vehicle} />}
+                            {activeTab === 'Bidding' && <Bidding vehicleId={vehicle.id} />}
+                        </div>
                     </div>
-
-                    <Bidding vehicleId={vehicle.id} />
                 </div>
 
-                <div className="lg:col-span-1 space-y-lg">
+                {/* Right Sticky Column */}
+                <div className="lg:col-span-1 space-y-lg lg:sticky top-24">
                     <div className="bg-glass p-lg rounded-xl border border-glass space-y-md">
                         <button className="w-full bg-primary-gradient text-white font-bold py-sm rounded-lg hover:opacity-90 transition-opacity">
                             Buy Now
@@ -102,30 +136,8 @@ const VehicleDetailPage = () => {
                     </div>
 
                     <div className="bg-glass p-lg rounded-xl border border-glass">
-                        <h2 className="text-h3 font-heading mb-md border-b border-glass pb-sm">Key Details</h2>
-                        <div className="grid grid-cols-2 gap-md">
-                            <DetailItem label="Mileage" value={`${vehicle.mileage.toLocaleString()} mi`} />
-                            <DetailItem label="Fuel Type" value={vehicle.fuel_type} />
-                            <DetailItem label="Transmission" value={vehicle.transmission} />
-                            <DetailItem label="Body Type" value={vehicle.body_type} />
-                            <DetailItem label="Exterior Color" value={vehicle.exterior_color} />
-                            <DetailItem label="Interior Color" value={vehicle.interior_color} />
-                            <DetailItem label="Engine" value={vehicle.engine} />
-                            <DetailItem label="VIN" value={vehicle.vin} />
-                        </div>
-                    </div>
-
-                    <div className="bg-glass p-lg rounded-xl border border-glass">
-                        <h2 className="text-h3 font-heading mb-md border-b border-glass pb-sm">Highlights</h2>
-                        <ul className="list-disc list-inside space-y-xs text-neutral-metallic-silver/90 pl-sm">
-                            {vehicle.highlights?.length ? vehicle.highlights.map((h, i) => <li key={i}>{h}</li>) : <li>No highlights provided.</li>}
-                        </ul>
-                    </div>
-
-                    <div className="bg-glass p-lg rounded-xl border border-glass">
-                        <h2 className="text-h3 font-heading mb-md border-b border-glass pb-sm">Condition</h2>
-                        <DetailItem label="Seller Notes" value={vehicle.seller_notes} />
-                        <DetailItem label="Known Flaws" value={vehicle.known_flaws} />
+                        <h2 className="text-h3 font-heading mb-md">Financing Calculator</h2>
+                        <InstallmentCalculator />
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Using a simplified local calculation for now to focus on UI
 const calculatePayment = (price: number, downPayment: number, term: number, rate: number) => {
@@ -29,10 +29,10 @@ const InstallmentCalculator: React.FC = () => {
     setMonthlyPayment(newPayment);
   };
 
-  const inputStyles = "w-full bg-glass border-b-2 border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:border-secondary-golden-yellow transition-colors";
+  const inputStyles = "w-full bg-backgrounds-card border border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md";
 
   return (
-    <div className="bg-glass/50 border border-glass p-lg rounded-xl shadow-2xl max-w-2xl mx-auto text-neutral-metallic-silver">
+    <div className="bg-glass border border-glass p-lg rounded-xl shadow-2xl backdrop-blur-md max-w-2xl mx-auto text-white">
       <h3 className="text-h3 font-heading text-center mb-lg">Payment Calculator</h3>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
@@ -63,7 +63,7 @@ const InstallmentCalculator: React.FC = () => {
           <h4 className="text-h4 text-center mb-md">Estimated Payment</h4>
           <div className="text-center">
             <span className="text-5xl font-accent text-secondary-golden-yellow">${monthlyPayment.toFixed(2)}</span>
-            <span className="text-neutral-metallic-silver/80">/month</span>
+            <span className="text-white/80">/month</span>
           </div>
         </div>
       )}

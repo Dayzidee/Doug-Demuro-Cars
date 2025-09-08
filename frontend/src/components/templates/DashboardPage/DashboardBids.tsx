@@ -12,8 +12,8 @@ const pastBids = [
 ];
 
 const BidRow = ({ bid, isPast = false }: { bid: any, isPast?: boolean }) => (
-    <tr className="border-b border-glass last:border-b-0">
-        <td className="py-md px-md"><Link to={`/inventory/${bid.id}`} className="hover:text-secondary-golden-yellow">{bid.vehicle}</Link></td>
+    <tr className="border-b border-glass last:border-b-0 hover:bg-white/5 transition-colors">
+        <td className="py-md px-md"><Link to={`/inventory/${bid.id}`} className="hover:text-secondary-golden-yellow font-semibold">{bid.vehicle}</Link></td>
         {isPast ? (
             <td className="py-md px-md">${bid.finalBid.toLocaleString()}</td>
         ) : (
@@ -33,7 +33,7 @@ const DashboardBids = () => {
     <div>
       <h1 className="text-h2 font-heading mb-lg">My Bids</h1>
 
-      <div className="bg-glass/50 border border-glass rounded-xl p-lg mb-lg">
+      <div className="bg-glass border border-glass rounded-xl p-lg mb-lg backdrop-blur-md">
         <h2 className="text-h3 font-heading mb-md">Active Bids</h2>
         <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -52,7 +52,7 @@ const DashboardBids = () => {
         </div>
       </div>
 
-      <div className="bg-glass/50 border border-glass rounded-xl p-lg">
+      <div className="bg-glass border border-glass rounded-xl p-lg backdrop-blur-md">
         <h2 className="text-h3 font-heading mb-md">Bid History</h2>
         <div className="overflow-x-auto">
             <table className="w-full text-left">

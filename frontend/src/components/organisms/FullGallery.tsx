@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // Define the types based on the expected API response
 interface VehicleData {
@@ -30,7 +30,7 @@ const FullGallery: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => {
       clearTimeout(handler);
@@ -65,13 +65,13 @@ const FullGallery: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, filters, debouncedSearchTerm]); // Dependencies for the fetch function
+  }, [page, filters, debouncedSearchTerm]);
 
   // Effect to trigger a new search when filters or debounced search term change
   useEffect(() => {
-    setPage(1); // Reset page to 1 for new searches
+    setPage(1);
     fetchImages(true);
-  }, [filters, debouncedSearchTerm]); // Note: fetchImages is not a dependency here to avoid loops
+  }, [filters, debouncedSearchTerm]);
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
@@ -84,30 +84,32 @@ const FullGallery: React.FC = () => {
     if (page > 1) {
       fetchImages(false);
     }
-  }, [page]); // Note: fetchImages is not a dependency here
+  }, [page]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const formInputStyles = "w-full bg-backgrounds-card border border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md";
+
   return (
-    <div className="flex flex-col md:flex-row gap-8">
-      <aside className="w-full md:w-1/4 p-4 bg-gray-800 rounded-lg self-start">
-        <h3 className="text-xl font-bold mb-4 text-white">Filters</h3>
-        <div className="space-y-4">
+    <div className="flex flex-col md:flex-row gap-lg">
+      <aside className="w-full md:w-1/4 p-lg bg-glass border border-glass rounded-xl shadow-2xl backdrop-blur-md h-fit self-start">
+        <h3 className="text-h3 font-heading mb-lg text-white">Filters</h3>
+        <div className="space-y-lg">
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-gray-300 mb-1">Search</label>
+            <label htmlFor="search" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Search</label>
             <input
               type="text"
               id="search"
               placeholder="e.g., Toyota Camry"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-gray-700 text-white rounded p-2 border border-gray-600 focus:border-blue-500"
+              className={formInputStyles}
             />
           </div>
           <div>
-            <label htmlFor="make" className="block text-sm font-medium text-gray-300 mb-1">Make</label>
+            <label htmlFor="make" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Make</label>
             <input
               type="text"
               id="make"
@@ -115,11 +117,11 @@ const FullGallery: React.FC = () => {
               placeholder="e.g., Ford"
               value={filters.make}
               onChange={handleFilterChange}
-              className="w-full bg-gray-700 text-white rounded p-2 border border-gray-600 focus:border-blue-500"
+              className={formInputStyles}
             />
           </div>
           <div>
-            <label htmlFor="year" className="block text-sm font-medium text-gray-300 mb-1">Year</label>
+            <label htmlFor="year" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Year</label>
             <input
               type="number"
               id="year"
@@ -127,17 +129,17 @@ const FullGallery: React.FC = () => {
               placeholder="e.g., 2023"
               value={filters.year}
               onChange={handleFilterChange}
-              className="w-full bg-gray-700 text-white rounded p-2 border border-gray-600 focus:border-blue-500"
+              className={formInputStyles}
             />
           </div>
         </div>
       </aside>
 
       <main className="w-full md:w-3/4">
-        {error && <div className="text-red-500 text-center p-4 bg-red-900/20 rounded-lg">{error}</div>}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {error && <div className="text-red-400 text-center p-md bg-red-900/20 rounded-lg">{error}</div>}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md">
           {images.map(image => (
-            <div key={image.id} className="group overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9">
+            <div key={image.id} className="group overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9 bg-glass">
               <img
                 src={image.url}
                 alt={image.alt_text || `${image.vehicles.year} ${image.vehicles.make} ${image.vehicles.model}`}
@@ -148,23 +150,23 @@ const FullGallery: React.FC = () => {
           ))}
         </div>
 
-        {loading && <div className="text-center text-white mt-8">Loading...</div>}
+        {loading && <div className="text-center text-neutral-metallic-silver mt-lg">Loading...</div>}
 
         {!loading && hasMore && (
-          <div className="text-center mt-8">
+          <div className="text-center mt-lg">
             <button
               onClick={handleLoadMore}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+              className="bg-primary-gradient hover:opacity-90 text-white font-bold py-sm px-lg rounded-lg transition-opacity"
             >
               Load More Images
             </button>
           </div>
         )}
         {!loading && !hasMore && images.length > 0 && (
-          <div className="text-center text-gray-500 mt-8 py-4">End of results.</div>
+          <div className="text-center text-neutral-metallic-silver/70 mt-lg py-md">End of results.</div>
         )}
         {!loading && images.length === 0 && !error && (
-          <div className="text-center text-gray-400 mt-8 p-8 bg-gray-800 rounded-lg">No images found for the selected criteria.</div>
+          <div className="text-center text-neutral-metallic-silver/80 mt-lg p-lg bg-glass rounded-lg">No images found for the selected criteria.</div>
         )}
       </main>
     </div>

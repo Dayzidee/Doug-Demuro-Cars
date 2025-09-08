@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Footer from './Footer/Footer';
 import { useState, useEffect } from 'react';
 import DesktopNav from './Navigation/DesktopNav';
-import MobileNav from './Navigation/MobileNav';
+import HeaderControls from './Navigation/HeaderControls';
 import BottomNav from './Navigation/BottomNav';
 
 export default function Layout() {
@@ -43,32 +43,12 @@ export default function Layout() {
             Doug DeNero Cars & Promos
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex flex-grow justify-center">
             <DesktopNav />
           </div>
 
-          {/* Right side controls */}
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:flex items-center space-x-4">
-                {isAuthenticated ? (
-                  <>
-                    <Link to="/dashboard" className="p-2 font-semibold hover:text-secondary-golden-yellow transition-colors">Dashboard</Link>
-                    {hasAdminAccess && (
-                      <Link to="/admin/promotions" className="p-2 bg-blue-600 rounded hover:bg-blue-700 transition-colors">Admin</Link>
-                    )}
-                  </>
-                ) : (
-                  <Link to="/login" className="p-2 font-semibold hover:text-secondary-golden-yellow transition-colors">Login</Link>
-                )}
-                <Link to="/sell" className="p-2 bg-secondary-gradient rounded-md text-white font-bold hover:opacity-90 transition-opacity">Sell Your Car</Link>
-            </div>
+          <HeaderControls isAuthenticated={isAuthenticated} hasAdminAccess={hasAdminAccess} />
 
-            {/* Mobile Navigation */}
-            <div className="md:hidden">
-              <MobileNav isAuthenticated={isAuthenticated} hasAdminAccess={hasAdminAccess} />
-            </div>
-          </div>
         </div>
       </header>
       <main className="flex-grow pb-16 md:pb-0">
