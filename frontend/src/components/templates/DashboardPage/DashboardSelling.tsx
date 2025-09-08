@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { mockVehicleData } from '../../../data/mockVehicleData';
 import { Vehicle } from '../../../services/api';
@@ -18,8 +18,8 @@ const ListingRow = ({ vehicle }: { vehicle: Vehicle & { status: string } }) => (
 const DashboardSelling = () => {
   const [activeTab, setActiveTab] = useState('Live');
 
-  // Placeholder data
-  const listings = {
+  // Explicitly type the listings object
+  const listings: { [key: string]: (Vehicle & { status: string })[] } = {
     'Live': mockVehicleData.slice(0, 1).map(v => ({...v, status: 'Live Auction'})),
     'In Progress': mockVehicleData.slice(1, 2).map(v => ({...v, status: 'Awaiting Approval'})),
     'Sold': mockVehicleData.slice(2, 4).map(v => ({...v, status: `Sold for $${(v.price * 1.1).toLocaleString()}`})),
@@ -49,7 +49,7 @@ const DashboardSelling = () => {
 
         <div>
             {listings[activeTab].length > 0 ? (
-                listings[activeTab].map(vehicle => <ListingRow key={vehicle.id} vehicle={vehicle} />)
+                listings[activeTab].map((vehicle: Vehicle & { status: string }) => <ListingRow key={vehicle.id} vehicle={vehicle} />)
             ) : (
                 <p className="text-neutral-metallic-silver/70 p-md">No listings in this category.</p>
             )}

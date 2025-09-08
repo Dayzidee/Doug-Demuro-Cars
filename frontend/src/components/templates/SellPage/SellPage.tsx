@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm, FormProvider, useFormContext, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,7 +41,7 @@ type FullFormData = z.infer<typeof fullSchema>;
 
 // --- Reusable Form Component Styles ---
 const formLabelStyles = "block text-sm font-medium text-neutral-metallic-silver/80 mb-xs";
-const formInputStyles = "w-full bg-glass/50 border-b-2 border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:border-secondary-golden-yellow transition-colors rounded-t-md";
+const formInputStyles = "w-full bg-backgrounds-card border border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md";
 const formTextareaStyles = `${formInputStyles} h-24 resize-none`;
 const formSelectStyles = `${formInputStyles} appearance-none`;
 const formErrorStyles = "text-red-400 text-xs mt-xs";
@@ -259,7 +259,7 @@ const SellForm = () => {
 };
 
 const SellPage = () => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const isVerified = isAuthenticated;
 
   const renderContent = () => {

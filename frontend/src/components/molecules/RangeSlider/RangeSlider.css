@@ -21,5 +21,5 @@
 .rc-slider-handle:hover,
 .rc-slider-handle-dragging.rc-slider-handle-dragging,
 .rc-slider-handle:focus-visible {
-  box-shadow: 0 0 0 5px rgba(255, 200, 55, 0.3); /* secondary-golden-yellow with alpha */
+  box-shadow: 0 0 0 5px rgba(0, 191, 255, 0.3); /* primary-electric-cyan with alpha */
 }

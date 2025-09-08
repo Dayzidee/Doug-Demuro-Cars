@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../../molecules/SearchBar/SearchBar';
 
@@ -32,7 +31,7 @@ const HeroSection = () => {
         <SearchBar />
 
         <div className="mt-lg flex flex-wrap justify-center gap-md">
-          <Link to="/inventory?type=new" className="px-lg py-sm font-bold rounded-lg bg-primary-gradient text-white hover:opacity-90 transition-opacity transform hover:scale-105">
+          <Link to="/inventory?type=new" className="px-lg py-sm font-bold rounded-lg bg-primary-gradient text-white hover:opacity-90 transition-opacity transform hover:scale-105 animate-pulse">
             Shop New Cars
           </Link>
           <Link to="/inventory?type=used" className="px-lg py-sm font-bold rounded-lg bg-secondary-gradient text-white hover:opacity-90 transition-opacity transform hover:scale-105">

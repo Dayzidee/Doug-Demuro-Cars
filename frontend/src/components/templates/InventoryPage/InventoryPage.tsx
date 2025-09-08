@@ -16,14 +16,24 @@ interface VehicleSearchResponse {
 
 // Skeleton loader for the initial loading state
 const VehicleGridSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
-    {[...Array(6)].map((_, i) => (
-      <div
-        key={i}
-        className="bg-glass border border-glass rounded-xl shadow-lg h-96 animate-pulse"
-      ></div>
-    ))}
-  </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
+        {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-backgrounds-card border border-glass rounded-xl shadow-lg p-md space-y-md">
+                <div className="h-56 w-full rounded-lg shimmer"></div>
+                <div className="space-y-sm">
+                    <div className="h-8 w-3/4 rounded-md shimmer"></div>
+                    <div className="h-6 w-1/2 rounded-md shimmer"></div>
+                </div>
+                <div className="grid grid-cols-2 gap-md">
+                    <div className="h-4 w-full rounded-md shimmer"></div>
+                    <div className="h-4 w-full rounded-md shimmer"></div>
+                    <div className="h-4 w-full rounded-md shimmer"></div>
+                    <div className="h-4 w-full rounded-md shimmer"></div>
+                </div>
+                <div className="h-10 w-full rounded-lg shimmer"></div>
+            </div>
+        ))}
+    </div>
 );
 
 // A new component to cleanly render the results grid and the "Load More" button

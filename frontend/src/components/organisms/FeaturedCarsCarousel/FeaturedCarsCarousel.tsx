@@ -1,7 +1,8 @@
-import React from 'react';
+import { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchFeaturedVehicles } from "../../../services/api";
 import VehicleCard from '../../molecules/VehicleCard/VehicleCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FeaturedCarsCarousel = () => {
   const {
@@ -14,44 +15,59 @@ const FeaturedCarsCarousel = () => {
     select: (data) => data.filter((v) => v.is_featured).slice(0, 8),
   });
 
-  if (isLoading) {
-    return (
-      <div className="py-12 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold font-heading text-charcoal mb-8">Featured Vehicles</h2>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (scrollOffset: number) => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: scrollOffset, behavior: 'smooth' });
+    }
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <p className="text-center text-lg text-neutral-metallic-silver">Loading featured vehicles...</p>;
+    }
 
     if (error) {
       return <p className="text-center text-red-400">Error: {error.message}</p>;
     }
 
     if (!vehicles || vehicles.length === 0) {
-      return <p className="text-center text-body-lg">No featured vehicles available at the moment.</p>;
+      return <p className="text-center text-lg text-neutral-metallic-silver">No featured vehicles available.</p>;
     }
 
     return (
-      <div className="flex space-x-md overflow-x-auto pb-md snap-x snap-mandatory scrollbar-thin scrollbar-thumb-secondary-golden-yellow/50 scrollbar-track-glass">
-        {vehicles.map((vehicle) => (
-          <div key={vehicle.id} className="snap-start flex-shrink-0 w-full sm:w-80 md:w-96">
-            <VehicleCard vehicle={vehicle} />
-          </div>
-        ))}
-      </div>
+        <div
+          ref={scrollContainerRef}
+          className="flex space-x-md overflow-x-auto pb-md snap-x snap-mandatory scrollbar-thin scrollbar-thumb-secondary-golden-yellow/50 scrollbar-track-glass -mb-md"
+        >
+          {vehicles.map((vehicle) => (
+            <div key={vehicle.id} className="snap-start flex-shrink-0 w-full sm:w-80 md:w-96 pb-md">
+              <VehicleCard vehicle={vehicle} />
+            </div>
+          ))}
+        </div>
     );
   }
 
   return (
     <section className="py-2xl">
       <div className="container mx-auto">
-        <h2 className="text-h2 font-heading uppercase text-center mb-xl">
-          <span className="bg-clip-text text-transparent bg-secondary-gradient">
-            Featured
-          </span> Vehicles
-        </h2>
+        <div className="flex justify-between items-center mb-xl">
+            <h2 className="text-h2 font-heading uppercase">
+              <span className="bg-clip-text text-transparent bg-secondary-gradient">
+                Featured
+              </span> Vehicles
+            </h2>
+            <div className="hidden md:flex items-center space-x-2">
+                <button onClick={() => scroll(-400)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white">
+                    <ChevronLeft size={24} />
+                </button>
+                <button onClick={() => scroll(400)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white">
+                    <ChevronRight size={24} />
+                </button>
+            </div>
+        </div>
         {renderContent()}
       </div>
     </section>

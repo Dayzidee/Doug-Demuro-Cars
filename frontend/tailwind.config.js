@@ -33,6 +33,9 @@ export default {
           'charcoal-black': '#111111',
         },
         'glass': 'rgba(255, 255, 255, 0.1)',
+        'backgrounds': {
+          'card': 'rgba(255, 255, 255, 0.05)',
+        }
       },
       borderColor: {
         'glass': 'rgba(255, 255, 255, 0.2)',
@@ -40,6 +43,8 @@ export default {
       backgroundImage: {
         'primary-gradient': 'linear-gradient(135deg, #0D1B2A 0%, #00BFFF 100%)',
         'secondary-gradient': 'linear-gradient(135deg, #FF7A18 0%, #FFC837 100%)',
+        'background-primary-gradient': 'linear-gradient(135deg, #0A0F1A 0%, #1A2332 50%, #2A3B4D 100%)',
+        'background-secondary-radial': 'radial-gradient(ellipse at center, #1E3A5F 0%, #0D1B2A 100%)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

@@ -11,21 +11,21 @@ interface RangeSliderProps {
   formatTooltip?: (value: number) => React.ReactNode;
 }
 
+const themeColors = {
+    rail: 'rgba(255, 255, 255, 0.1)', // bg-glass
+    track: 'linear-gradient(135deg, #0D1B2A 0%, #00BFFF 100%)', // primary-gradient
+    handleBorder: '#00BFFF', // primary-electric-cyan
+    tooltipBg: '#0D1B2A', // primary-deep-blue
+};
+
 const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, value, onChange, formatTooltip }) => {
   const handleChange = (newValue: number | number[]) => {
     onChange(newValue as [number, number]);
   };
 
   const handleRender: SliderProps['handleRender'] = (node, props) => {
-    return (
-      <div className="relative group">
-        <div className="absolute bottom-full mb-sm left-1/2 -translate-x-1/2 px-sm py-xs bg-primary-deep-blue text-white text-xs rounded-md opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          {formatTooltip ? formatTooltip(props.value) : props.value}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-primary-deep-blue"></div>
-        </div>
-        {node}
-      </div>
-    );
+    const tip = formatTooltip ? formatTooltip(props.value) : props.value;
+    return React.cloneElement(node, { 'aria-label': 'slider-handle', 'aria-valuetext': tip });
   };
 
   return (
@@ -36,13 +36,14 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, value, onChange, fo
       value={value}
       onChange={handleChange}
       allowCross={false}
-      railStyle={{ backgroundColor: "rgba(255, 255, 255, 0.1)" /* bg-glass */ }}
-      trackStyle={{ background: "linear-gradient(135deg, #FF7A18 0%, #FFC837 100%)" /* secondary-gradient */ }}
+      railStyle={{ backgroundColor: themeColors.rail, height: '6px' }}
+      trackStyle={{ background: themeColors.track, height: '6px' }}
       handleStyle={[
-        { backgroundColor: 'white', border: '2px solid #FFC837' /* secondary-golden-yellow */ },
-        { backgroundColor: 'white', border: '2px solid #FFC837' /* secondary-golden-yellow */ },
+        { backgroundColor: 'white', border: `2px solid ${themeColors.handleBorder}` },
+        { backgroundColor: 'white', border: `2px solid ${themeColors.handleBorder}` },
       ]}
       handleRender={handleRender}
+      className="touch-none"
     />
   );
 };
