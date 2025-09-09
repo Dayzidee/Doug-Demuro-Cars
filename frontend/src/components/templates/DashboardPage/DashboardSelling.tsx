@@ -15,19 +15,20 @@ const ListingRow = ({ vehicle }: { vehicle: Vehicle & { status: string } }) => (
     </div>
 );
 
-const DashboardSelling = () => {
-  const [activeTab, setActiveTab] = useState('Live');
+type TabName = 'Live' | 'In Progress' | 'Sold';
 
-  // Explicitly type the listings object
-  const listings: { [key: string]: (Vehicle & { status: string })[] } = {
+const DashboardSelling = () => {
+  const [activeTab, setActiveTab] = useState<TabName>('Live');
+
+  const listings: { [key in TabName]: (Vehicle & { status: string })[] } = {
     'Live': mockVehicleData.slice(0, 1).map(v => ({...v, status: 'Live Auction'})),
     'In Progress': mockVehicleData.slice(1, 2).map(v => ({...v, status: 'Awaiting Approval'})),
     'Sold': mockVehicleData.slice(2, 4).map(v => ({...v, status: `Sold for $${(v.price * 1.1).toLocaleString()}`})),
   };
 
-  const tabs = ['Live', 'In Progress', 'Sold'];
+  const tabs: TabName[] = ['Live', 'In Progress', 'Sold'];
 
-  const TabButton = ({ tabName }: { tabName: string }) => (
+  const TabButton = ({ tabName }: { tabName: TabName }) => (
       <button
         onClick={() => setActiveTab(tabName)}
         className={`px-lg py-sm font-bold transition-colors ${activeTab === tabName ? 'border-b-2 border-secondary-golden-yellow text-white' : 'text-neutral-metallic-silver/70 hover:text-white'}`}
@@ -40,7 +41,7 @@ const DashboardSelling = () => {
     <div>
       <h1 className="text-h2 font-heading mb-lg">Selling Center</h1>
 
-      <div className="bg-glass/50 border border-glass rounded-xl p-lg">
+      <div className="bg-glass border border-glass rounded-xl p-lg backdrop-blur-md">
         <div className="border-b border-glass mb-md">
             <nav className="-mb-px flex space-x-lg" aria-label="Tabs">
                 {tabs.map(tab => <TabButton key={tab} tabName={tab} />)}
@@ -49,7 +50,7 @@ const DashboardSelling = () => {
 
         <div>
             {listings[activeTab].length > 0 ? (
-                listings[activeTab].map((vehicle: Vehicle & { status: string }) => <ListingRow key={vehicle.id} vehicle={vehicle} />)
+                listings[activeTab].map((vehicle) => <ListingRow key={vehicle.id} vehicle={vehicle} />)
             ) : (
                 <p className="text-neutral-metallic-silver/70 p-md">No listings in this category.</p>
             )}

@@ -34,6 +34,7 @@ export interface VehicleDetail extends VehicleSummary {
   bid_count: number;
   created_at: string;
   updated_at: string;
+  media?: { url: string }[];
 }
 
 export type Vehicle = VehicleDetail | VehicleSummary;
