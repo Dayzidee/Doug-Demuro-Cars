@@ -7,6 +7,7 @@ import MediaGallery from '../../organisms/MediaGallery/MediaGallery';
 import InstallmentCalculator from '../../molecules/InstallmentCalculator';
 import { CheckCircle2, GitCompareArrows } from 'lucide-react';
 import { useCompareStore } from '../../../hooks/useCompareStore';
+import CommentSection from '../../organisms/CommentSection/CommentSection';
 
 // Helper component to display a single detail item
 const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -121,11 +122,13 @@ const VehicleDetailPage = () => {
                             <nav className="-mb-px flex space-x-lg" aria-label="Tabs">
                                 <TabButton tabName="Details" />
                                 <TabButton tabName="Condition" />
+                                <TabButton tabName="Comments" />
                             </nav>
                         </div>
                         <div>
                             {activeTab === 'Details' && <DetailsTab vehicle={vehicle} />}
                             {activeTab === 'Condition' && <ConditionTab vehicle={vehicle} />}
+                            {activeTab === 'Comments' && <CommentSection />}
                         </div>
                     </div>
                 </div>

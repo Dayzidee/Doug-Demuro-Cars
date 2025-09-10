@@ -2,11 +2,16 @@ import AuctionCard, { AuctionItem } from '../../molecules/AuctionCard/AuctionCar
 import { mockVehicleData } from '../../../data/mockVehicleData';
 
 // Create placeholder auction data by extending mock vehicle data
-const auctionItems: AuctionItem[] = mockVehicleData.slice(0, 6).map((vehicle, index) => ({
-  ...vehicle,
-  currentBid: vehicle.price + (index * 1500),
-  timeLeft: `${index + 1}d ${index * 2}h ${index * 15}m`,
-}));
+const auctionItems: AuctionItem[] = mockVehicleData.slice(0, 6).map((vehicle, index) => {
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + index + 1);
+  endDate.setHours(endDate.getHours() + index * 2);
+  return {
+    ...vehicle,
+    currentBid: vehicle.price + (index * 1500),
+    endDate: endDate,
+  };
+});
 
 const AuctionsPage = () => {
   return (

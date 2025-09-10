@@ -1,16 +1,32 @@
 import { Link } from 'react-router-dom';
 import { Vehicle } from '../../../services/api';
-import { Heart, GitCompareArrows } from 'lucide-react';
+import { Heart, GitCompareArrows, Timer } from 'lucide-react';
 import { useCompareStore } from '../../../hooks/useCompareStore';
+import { useCountdown } from '../../../hooks/useCountdown';
 
 export type AuctionItem = Vehicle & {
   currentBid: number;
-  timeLeft: string;
+  endDate: Date;
 };
 
 interface AuctionCardProps {
   item: AuctionItem;
 }
+
+const CountdownTimer = ({ endDate }: { endDate: Date }) => {
+    const { days, hours, minutes, seconds, isFinished } = useCountdown(endDate);
+
+    if (isFinished) {
+        return <span className="text-red-400">Auction Ended</span>;
+    }
+
+    return (
+        <div className="flex items-center space-x-1">
+            <Timer size={16} className="flex-shrink-0" />
+            <span>{`${days}d ${hours}h ${minutes}m ${seconds}s`}</span>
+        </div>
+    );
+};
 
 const AuctionCard: React.FC<AuctionCardProps> = ({ item }) => {
   const { id, year, make, model, hero_image_url } = item;
@@ -33,7 +49,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ item }) => {
       <div className="relative overflow-hidden">
         <img loading="lazy" src={imageUrl} alt={`${year} ${make} ${model}`} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-110" />
         <div className="absolute top-0 left-0 bg-primary-deep-blue/50 text-white text-sm font-bold px-md py-sm rounded-br-xl backdrop-blur-sm">
-          {item.timeLeft}
+          <CountdownTimer endDate={item.endDate} />
         </div>
       </div>
       <div className="p-md flex flex-col flex-grow">

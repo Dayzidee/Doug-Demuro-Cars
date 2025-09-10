@@ -20,7 +20,8 @@ const Bidding = ({ vehicleId }: BiddingProps) => {
         refetchInterval: 30000,
     });
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<BidFormData>();
+    const { register, handleSubmit, reset, formState: { errors }, watch, setValue } = useForm<BidFormData>();
+    const currentBidAmount = watch('amount');
 
     const mutation = useMutation({
         mutationFn: postNewBid,
@@ -35,7 +36,14 @@ const Bidding = ({ vehicleId }: BiddingProps) => {
     };
 
     const highestBid = bidHistory && bidHistory.length > 0 ? bidHistory[0].amount : 0;
+
+    const handleBidIncrement = (increment: number) => {
+        const currentVal = Number(currentBidAmount) || highestBid + 1;
+        setValue('amount', currentVal + increment, { shouldValidate: true });
+    };
+
     const formInputStyles = "w-full bg-backgrounds-card border border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md pl-7";
+    const incrementButtonStyles = "bg-glass hover:bg-white/10 text-white font-bold py-xs px-sm rounded-md transition-colors";
 
     return (
         <div>
@@ -62,6 +70,13 @@ const Bidding = ({ vehicleId }: BiddingProps) => {
                     </div>
                     {errors.amount && <p className="text-red-400 text-xs mt-xs">{errors.amount.message}</p>}
                 </div>
+
+                <div className="grid grid-cols-3 gap-sm">
+                    <button type="button" onClick={() => handleBidIncrement(100)} className={incrementButtonStyles}>+$100</button>
+                    <button type="button" onClick={() => handleBidIncrement(500)} className={incrementButtonStyles}>+$500</button>
+                    <button type="button" onClick={() => handleBidIncrement(1000)} className={incrementButtonStyles}>+$1000</button>
+                </div>
+
                 <button
                     type="submit"
                     disabled={mutation.isPending}
