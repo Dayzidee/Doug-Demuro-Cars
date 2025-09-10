@@ -1,90 +1,48 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { mockVehicleData } from '../../data/mockVehicleData';
 
-// Define the types based on the expected API response
-interface VehicleData {
+interface DisplayImage {
+  id: string;
+  url: string;
+  type: 'exterior' | 'interior';
   make: string;
   model: string;
   year: number;
 }
 
-interface VehicleMedia {
-  id: string;
-  url: string;
-  alt_text?: string;
-  vehicles: VehicleData;
-}
-
 const FullGallery: React.FC = () => {
-  const [images, setImages] = useState<VehicleMedia[]>([]);
   const [filters, setFilters] = useState({ make: '', year: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const PAGE_SIZE = 30;
-
-  // Debounce the search term to avoid excessive API calls
+  // Debounce the search term
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
+    }, 300);
+    return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const fetchImages = useCallback(async (isNewSearch: boolean) => {
-    setLoading(true);
-    setError(null);
+  const allImages: DisplayImage[] = useMemo(() => {
+    return mockVehicleData.flatMap(vehicle =>
+      vehicle.media.map(mediaItem => ({
+        ...mediaItem,
+        id: `${vehicle.id}-${mediaItem.url}`,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+      }))
+    );
+  }, []);
 
-    const currentPage = isNewSearch ? 1 : page;
-    const params = new URLSearchParams({
-      limit: String(PAGE_SIZE),
-      offset: String((currentPage - 1) * PAGE_SIZE),
+  const filteredImages = useMemo(() => {
+    return allImages.filter(image => {
+      const searchMatch = debouncedSearchTerm ? `${image.year} ${image.make} ${image.model}`.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) : true;
+      const makeMatch = filters.make ? image.make.toLowerCase().includes(filters.make.toLowerCase()) : true;
+      const yearMatch = filters.year ? image.year.toString() === filters.year : true;
+      return searchMatch && makeMatch && yearMatch;
     });
-    if (filters.make) params.append('make', filters.make);
-    if (filters.year) params.append('year', filters.year);
-    if (debouncedSearchTerm) params.append('q', debouncedSearchTerm);
-
-    try {
-      const response = await fetch(`/api/v1/gallery/search?${params.toString()}`);
-      if (!response.ok) throw new Error('Failed to fetch images from the gallery.');
-
-      const newImages = await response.json();
-
-      setImages(prevImages => isNewSearch ? newImages : [...prevImages, ...newImages]);
-      setHasMore(newImages.length === PAGE_SIZE);
-
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
-      else setError('An unknown error occurred');
-    } finally {
-      setLoading(false);
-    }
-  }, [page, filters, debouncedSearchTerm]);
-
-  // Effect to trigger a new search when filters or debounced search term change
-  useEffect(() => {
-    setPage(1);
-    fetchImages(true);
-  }, [filters, debouncedSearchTerm]);
-
-  const handleLoadMore = () => {
-    if (!loading && hasMore) {
-      setPage(prevPage => prevPage + 1);
-    }
-  };
-
-  // Effect to fetch more images when page number increases
-  useEffect(() => {
-    if (page > 1) {
-      fetchImages(false);
-    }
-  }, [page]);
+  }, [allImages, filters, debouncedSearchTerm]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -136,13 +94,12 @@ const FullGallery: React.FC = () => {
       </aside>
 
       <main className="w-full md:w-3/4">
-        {error && <div className="text-red-400 text-center p-md bg-red-900/20 rounded-lg">{error}</div>}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md">
-          {images.map(image => (
+          {filteredImages.map(image => (
             <div key={image.id} className="group overflow-hidden rounded-lg shadow-lg aspect-w-16 aspect-h-9 bg-glass">
               <img
                 src={image.url}
-                alt={image.alt_text || `${image.vehicles.year} ${image.vehicles.make} ${image.vehicles.model}`}
+                alt={`${image.year} ${image.make} ${image.model}`}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
                 loading="lazy"
               />
@@ -150,22 +107,7 @@ const FullGallery: React.FC = () => {
           ))}
         </div>
 
-        {loading && <div className="text-center text-neutral-metallic-silver mt-lg">Loading...</div>}
-
-        {!loading && hasMore && (
-          <div className="text-center mt-lg">
-            <button
-              onClick={handleLoadMore}
-              className="bg-primary-gradient hover:opacity-90 text-white font-bold py-sm px-lg rounded-lg transition-opacity"
-            >
-              Load More Images
-            </button>
-          </div>
-        )}
-        {!loading && !hasMore && images.length > 0 && (
-          <div className="text-center text-neutral-metallic-silver/70 mt-lg py-md">End of results.</div>
-        )}
-        {!loading && images.length === 0 && !error && (
+        {filteredImages.length === 0 && (
           <div className="text-center text-neutral-metallic-silver/80 mt-lg p-lg bg-glass rounded-lg">No images found for the selected criteria.</div>
         )}
       </main>

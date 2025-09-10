@@ -8,9 +8,8 @@ interface VehicleCardProps {
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
-  const { id, year, make, model, price, mileage, transmission, fuel_type, hero_image_url } = vehicle;
+  const { id, year, make, model, price, mileage, transmission, fuel_type, media } = vehicle;
 
-  // Get functions and state from the compare store
   const { addVehicle, removeVehicle, isInCompare } = useCompareStore();
   const isComparing = isInCompare(id);
 
@@ -22,7 +21,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
     }
   };
 
-  const imageUrl = hero_image_url || `https://via.placeholder.com/400x300.png/0D1B2A/E5E5E5?text=${year}+${make}+${model}`;
+  const heroImage = media?.find(m => m.type === 'exterior') || media?.[0];
+  const imageUrl = heroImage?.url || `https://via.placeholder.com/400x300.png/0D1B2A/E5E5E5?text=${year}+${make}+${model}`;
+
   const isHotDeal = price < 30000;
   const isLowMileage = mileage < 50000;
 

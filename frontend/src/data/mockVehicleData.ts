@@ -7,8 +7,21 @@ export interface Vehicle {
   mileage: number;
   transmission: string;
   fuelType: string;
-  imageUrl: string;
+  media: { url: string; type: 'exterior' | 'interior' }[];
 }
+
+const generateMedia = (make: string, model: string, count: number): { url: string; type: 'exterior' | 'interior' }[] => {
+    const media = [];
+    const modelPath = model.replace(/\s+/g, '-');
+    for (let i = 1; i <= count; i++) {
+        const type = i <= 5 ? 'exterior' : 'interior';
+        media.push({
+            url: `/images/vehicles/${make}_${modelPath}_${i.toString().padStart(2, '0')}_${type}.jpg`,
+            type: type
+        });
+    }
+    return media;
+};
 
 export const mockVehicleData: Vehicle[] = [
   {
@@ -20,7 +33,7 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 15000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    imageUrl: 'https://placehold.co/400x300/1E293B/FFFFFF/png?text=Toyota+Camry',
+    media: generateMedia('Toyota', 'Camry', 10),
   },
   {
     id: 'VIN002',
@@ -31,7 +44,7 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 25000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    imageUrl: 'https://placehold.co/400x300/475569/FFFFFF/png?text=Honda+CR-V',
+    media: generateMedia('Honda', 'CR-V', 10),
   },
   {
     id: 'VIN003',
@@ -42,7 +55,7 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 5000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    imageUrl: 'https://placehold.co/400x300/1E293B/FFFFFF/png?text=Ford+F-150',
+    media: generateMedia('Ford', 'F-150', 10),
   },
   {
     id: 'VIN004',
@@ -53,7 +66,7 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 10000,
     transmission: 'Automatic',
     fuelType: 'Electric',
-    imageUrl: 'https://placehold.co/400x300/475569/FFFFFF/png?text=Tesla+Model+3',
+    media: generateMedia('Tesla', 'Model-3', 10),
   },
   {
     id: 'VIN005',
@@ -64,7 +77,7 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 35000,
     transmission: 'Automatic',
     fuelType: 'Hybrid',
-    imageUrl: 'https://placehold.co/400x300/1E293B/FFFFFF/png?text=BMW+X5',
+    media: generateMedia('BMW', 'X5', 10),
   },
   {
     id: 'VIN006',
@@ -75,6 +88,6 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 18000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    imageUrl: 'https://placehold.co/400x300/475569/FFFFFF/png?text=Audi+A4',
+    media: generateMedia('Audi', 'A4', 10),
   }
 ];
