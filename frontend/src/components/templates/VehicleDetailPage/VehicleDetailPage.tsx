@@ -92,14 +92,9 @@ const VehicleDetailPage = () => {
     if (isError) return <div className="container mx-auto py-xl text-center text-red-400">Error: {error.message}</div>;
     if (!vehicle) return <div className="container mx-auto py-xl text-center">Vehicle not found.</div>;
 
-    const placeholderImages = [
-        { url: 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-        { url: 'https://images.pexels.com/photos/2127733/pexels-photo-2127733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-    ];
-    const media = vehicle.media || placeholderImages;
-    const heroImageUrl = vehicle.hero_image_url || media[0]?.url;
+    const media = vehicle.media || [];
 
-    const TabButton = ({ tabName }: { tabName: string }) => (
+    const TabButton = ({ tabName }: { tabName:string }) => (
       <button
         onClick={() => setActiveTab(tabName)}
         className={`px-lg py-sm font-bold transition-colors text-lg ${activeTab === tabName ? 'border-b-2 border-secondary-golden-yellow text-white' : 'text-neutral-metallic-silver/70 hover:text-white'}`}
@@ -118,7 +113,7 @@ const VehicleDetailPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg items-start">
                 {/* Left Column */}
                 <div className="lg:col-span-2 space-y-lg">
-                    <MediaGallery images={media} heroImageUrl={heroImageUrl} />
+                    <MediaGallery media={media} />
 
                     {/* Information Tabs */}
                     <div className="bg-glass p-lg rounded-xl border border-glass">
