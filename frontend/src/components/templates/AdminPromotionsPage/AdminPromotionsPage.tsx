@@ -1,18 +1,17 @@
-import React from 'react';
 import PromotionsManager from '../../organisms/PromotionsManager';
 
 const AdminPromotionsPage: React.FC = () => {
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
-      <header className="bg-gray-800 p-6 shadow-md">
-        <div className="container mx-auto">
-          <h1 className="text-4xl font-bold">Admin: Manage Promotions</h1>
-          <p className="text-gray-300 mt-2">Use this interface to create, edit, and delete promotional offers.</p>
-        </div>
-      </header>
-      <main className="p-4 md:p-8">
-        <PromotionsManager />
-      </main>
+    <div className="container mx-auto py-xl">
+      <div className="text-center mb-xl">
+        <h1 className="text-h1 font-heading uppercase">
+          Manage <span className="bg-clip-text text-transparent bg-secondary-gradient">Promotions</span>
+        </h1>
+        <p className="text-body-lg text-neutral-metallic-silver/80 mt-md max-w-3xl mx-auto">
+          Use this interface to create, edit, and delete promotional offers for the website.
+        </p>
+      </div>
+      <PromotionsManager />
     </div>
   );
 };
