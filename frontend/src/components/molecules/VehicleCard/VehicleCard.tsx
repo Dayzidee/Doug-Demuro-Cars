@@ -1,7 +1,7 @@
-import React from 'react';
-import { Vehicle } from '../../../services/api';
 import { Link } from 'react-router-dom';
+import { Vehicle } from '../../../services/api';
 import { Heart, GitCompareArrows } from 'lucide-react';
+import { useCompareStore } from '../../../hooks/useCompareStore';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -10,9 +10,19 @@ interface VehicleCardProps {
 const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
   const { id, year, make, model, price, mileage, transmission, fuel_type, hero_image_url } = vehicle;
 
-  const imageUrl = hero_image_url || `https://via.placeholder.com/400x300.png/0D1B2A/E5E5E5?text=${year}+${make}+${model}`;
+  // Get functions and state from the compare store
+  const { addVehicle, removeVehicle, isInCompare } = useCompareStore();
+  const isComparing = isInCompare(id);
 
-  // Placeholder data for new features
+  const handleCompareClick = () => {
+    if (isComparing) {
+      removeVehicle(id);
+    } else {
+      addVehicle(id);
+    }
+  };
+
+  const imageUrl = hero_image_url || `https://via.placeholder.com/400x300.png/0D1B2A/E5E5E5?text=${year}+${make}+${model}`;
   const isHotDeal = price < 30000;
   const isLowMileage = mileage < 50000;
 
@@ -20,7 +30,6 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
     <div className="bg-backgrounds-card border border-glass rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out group flex flex-col hover:shadow-primary-electric-cyan/20 hover:border-primary-electric-cyan/50 hover:-translate-y-2 hover:rotate-[-1deg]">
       <div className="relative overflow-hidden">
         <img loading="lazy" src={imageUrl} alt={`${year} ${make} ${model}`} className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-110" />
-
         <div className="absolute top-2 right-2 flex flex-col gap-2">
             {vehicle.is_featured && (
               <div className="text-xs font-bold px-sm py-xs rounded bg-secondary-gradient text-white shadow-lg">Featured</div>
@@ -40,10 +49,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
         </p>
         <div className="mt-md grid grid-cols-2 gap-x-md gap-y-sm text-sm text-neutral-metallic-silver/80 flex-grow">
           <div><span className="font-semibold">Mileage:</span> {mileage.toLocaleString()} mi</div>
-          <div><span className="font-semibold">Fuel:</span> {fuel_type}</div>
-          <div><span className="font-semibold">Transmission:</span> {transmission}</div>
+          {fuel_type && <div><span className="font-semibold">Fuel:</span> {fuel_type}</div>}
+          {transmission && <div><span className="font-semibold">Transmission:</span> {transmission}</div>}
         </div>
-
         <div className="mt-md flex items-center gap-2">
             <Link to={`/inventory/${id}`} className="block text-center w-full px-md py-sm font-bold rounded-lg bg-primary-gradient text-white hover:opacity-90 transition-opacity transform hover:scale-105">
               View Details
@@ -51,7 +59,11 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
             <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white">
                 <Heart size={20} />
             </button>
-            <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white">
+            <button
+              onClick={handleCompareClick}
+              className={`p-2 rounded-lg transition-colors text-white ${isComparing ? 'bg-primary-electric-cyan' : 'bg-white/10 hover:bg-white/20'}`}
+              aria-label={isComparing ? 'Remove from comparison' : 'Add to comparison'}
+            >
                 <GitCompareArrows size={20} />
             </button>
         </div>

@@ -5,7 +5,8 @@ import { fetchVehicleById, VehicleDetail } from '../../../services/api';
 import Bidding from '../../organisms/Bidding/Bidding';
 import MediaGallery from '../../organisms/MediaGallery/MediaGallery';
 import InstallmentCalculator from '../../molecules/InstallmentCalculator';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, GitCompareArrows } from 'lucide-react';
+import { useCompareStore } from '../../../hooks/useCompareStore';
 
 // Helper component to display a single detail item
 const DetailItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
@@ -69,6 +70,18 @@ const VehicleDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const [activeTab, setActiveTab] = useState('Details');
 
+    const { addVehicle, removeVehicle, isInCompare } = useCompareStore();
+    const isComparing = id ? isInCompare(id) : false;
+
+    const handleCompareClick = () => {
+        if (!id) return;
+        if (isComparing) {
+            removeVehicle(id);
+        } else {
+            addVehicle(id);
+        }
+    };
+
     const { data: vehicle, isLoading, error, isError } = useQuery<VehicleDetail>({
         queryKey: ['vehicle', id],
         queryFn: () => fetchVehicleById(id!),
@@ -113,13 +126,11 @@ const VehicleDetailPage = () => {
                             <nav className="-mb-px flex space-x-lg" aria-label="Tabs">
                                 <TabButton tabName="Details" />
                                 <TabButton tabName="Condition" />
-                                <TabButton tabName="Bidding" />
                             </nav>
                         </div>
                         <div>
                             {activeTab === 'Details' && <DetailsTab vehicle={vehicle} />}
                             {activeTab === 'Condition' && <ConditionTab vehicle={vehicle} />}
-                            {activeTab === 'Bidding' && <Bidding vehicleId={vehicle.id} />}
                         </div>
                     </div>
                 </div>
@@ -127,11 +138,24 @@ const VehicleDetailPage = () => {
                 {/* Right Sticky Column */}
                 <div className="lg:col-span-1 space-y-lg lg:sticky top-24">
                     <div className="bg-glass p-lg rounded-xl border border-glass space-y-md">
+                        <h2 className="text-h3 font-heading mb-md">Bidding</h2>
+                        <Bidding vehicleId={vehicle.id} />
+                    </div>
+
+                    <div className="bg-glass p-lg rounded-xl border border-glass space-y-md">
+                         <h2 className="text-h3 font-heading mb-md">Actions</h2>
                         <button className="w-full bg-primary-gradient text-white font-bold py-sm rounded-lg hover:opacity-90 transition-opacity">
                             Buy Now
                         </button>
                         <button className="w-full bg-secondary-gradient text-white font-bold py-sm rounded-lg hover:opacity-90 transition-opacity">
                             Make an Offer
+                        </button>
+                        <button
+                            onClick={handleCompareClick}
+                            className={`w-full flex items-center justify-center gap-x-2 font-bold py-sm rounded-lg transition-colors ${isComparing ? 'bg-primary-electric-cyan text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                        >
+                            <GitCompareArrows size={20} />
+                            <span>{isComparing ? 'Remove from Compare' : 'Add to Compare'}</span>
                         </button>
                     </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // This interface should be shared or imported from a types file
 export interface Offer {
@@ -66,43 +66,47 @@ const PromotionForm: React.FC<PromotionFormProps> = ({ promotion, onSave, onCanc
     onSave(formData);
   };
 
+  const formInputStyles = "w-full bg-backgrounds-card border border-glass p-sm text-white placeholder-neutral-metallic-silver/50 focus:outline-none focus:ring-2 focus:ring-primary-electric-cyan transition-all duration-300 rounded-md";
+  const formTextareaStyles = `${formInputStyles} h-24 resize-none`;
+  const formSelectStyles = `${formInputStyles} appearance-none`;
+
   return (
     <form onSubmit={handleSubmit}>
-      <div className="space-y-4 text-left">
+      <div className="space-y-md text-left">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">Title</label>
-          <input id="title" name="title" type="text" value={formData.title} onChange={handleChange} required className="w-full bg-gray-700 p-2 rounded border border-gray-600 focus:border-blue-500" />
+          <label htmlFor="title" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Title</label>
+          <input id="title" name="title" type="text" value={formData.title} onChange={handleChange} required className={formInputStyles} />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-          <textarea id="description" name="description" value={formData.description} onChange={handleChange} className="w-full bg-gray-700 p-2 rounded border border-gray-600 focus:border-blue-500" rows={3}/>
+          <label htmlFor="description" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Description</label>
+          <textarea id="description" name="description" value={formData.description} onChange={handleChange} className={formTextareaStyles} rows={3}/>
         </div>
         <div>
-          <label htmlFor="promo_type" className="block text-sm font-medium text-gray-300 mb-1">Promotion Type</label>
-          <select id="promo_type" name="promo_type" value={formData.promo_type} onChange={handleChange} className="w-full bg-gray-700 p-2 rounded border border-gray-600 focus:border-blue-500">
-            <option value="deal">Deal</option>
-            <option value="featured_vehicle">Featured Vehicle</option>
-            <option value="seasonal_offer">Seasonal Offer</option>
+          <label htmlFor="promo_type" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Promotion Type</label>
+          <select id="promo_type" name="promo_type" value={formData.promo_type} onChange={handleChange} className={formSelectStyles}>
+            <option value="deal" className="bg-primary-deep-blue">Deal</option>
+            <option value="featured_vehicle" className="bg-primary-deep-blue">Featured Vehicle</option>
+            <option value="seasonal_offer" className="bg-primary-deep-blue">Seasonal Offer</option>
           </select>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-md">
           <div>
-            <label htmlFor="start_date" className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
-            <input id="start_date" name="start_date" type="date" value={formData.start_date} onChange={handleChange} required className="w-full bg-gray-700 p-2 rounded border border-gray-600 focus:border-blue-500" />
+            <label htmlFor="start_date" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">Start Date</label>
+            <input id="start_date" name="start_date" type="date" value={formData.start_date} onChange={handleChange} required className={formInputStyles} />
           </div>
           <div>
-            <label htmlFor="end_date" className="block text-sm font-medium text-gray-300 mb-1">End Date</label>
-            <input id="end_date" name="end_date" type="date" value={formData.end_date} onChange={handleChange} required className="w-full bg-gray-700 p-2 rounded border border-gray-600 focus:border-blue-500" />
+            <label htmlFor="end_date" className="block text-sm font-medium text-neutral-metallic-silver/80 mb-xs">End Date</label>
+            <input id="end_date" name="end_date" type="date" value={formData.end_date} onChange={handleChange} required className={formInputStyles} />
           </div>
         </div>
         <div className="flex items-center">
-          <input id="is_active" name="is_active" type="checkbox" checked={formData.is_active} onChange={handleChange} className="h-4 w-4 rounded bg-gray-700 border-gray-600 text-blue-500 focus:ring-blue-600"/>
-          <label htmlFor="is_active" className="ml-2 text-sm font-medium text-gray-300">Active</label>
+          <input id="is_active" name="is_active" type="checkbox" checked={formData.is_active} onChange={handleChange} className="h-4 w-4 rounded border-glass bg-backgrounds-card text-primary-electric-cyan focus:ring-primary-electric-cyan/50 focus:ring-offset-backgrounds-card"/>
+          <label htmlFor="is_active" className="ml-sm text-sm font-medium text-white">Active</label>
         </div>
       </div>
-      <div className="mt-8 flex justify-end space-x-4">
-        <button type="button" onClick={onCancel} className="bg-gray-600 hover:bg-gray-500 py-2 px-4 rounded transition-colors" disabled={isSaving}>Cancel</button>
-        <button type="submit" className="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded transition-colors disabled:bg-gray-500" disabled={isSaving}>
+      <div className="mt-lg flex justify-end space-x-4">
+        <button type="button" onClick={onCancel} className="bg-neutral-metallic-silver/20 hover:bg-neutral-metallic-silver/30 text-white font-bold py-sm px-md rounded-lg transition-colors" disabled={isSaving}>Cancel</button>
+        <button type="submit" className="bg-primary-gradient hover:opacity-90 text-white font-bold py-sm px-md rounded-lg transition-opacity disabled:opacity-50" disabled={isSaving}>
           {isSaving ? 'Saving...' : 'Save Promotion'}
         </button>
       </div>

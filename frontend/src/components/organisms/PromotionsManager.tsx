@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PromotionForm, { Offer } from '../molecules/PromotionForm';
 
 const PromotionsManager: React.FC = () => {
@@ -117,55 +117,55 @@ const PromotionsManager: React.FC = () => {
   if (error) return <div className="text-center p-8 text-red-400 bg-red-900/30 rounded-lg">{error}</div>;
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Promotions List</h2>
-        <button onClick={handleOpenCreateModal} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
-          + Create New Promotion
+    <div className="bg-glass border border-glass p-lg rounded-xl shadow-2xl backdrop-blur-md">
+      <div className="flex justify-between items-center mb-lg">
+        <h2 className="text-h3 font-heading">Promotions List</h2>
+        <button onClick={handleOpenCreateModal} className="bg-primary-gradient hover:opacity-90 text-white font-bold py-sm px-md rounded-lg transition-opacity">
+          + Create New
         </button>
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow overflow-x-auto">
+      <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-gray-700 text-xs text-gray-300 uppercase tracking-wider">
-            <tr>
-              <th className="p-3">Title</th>
-              <th className="p-3">Type</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Start Date</th>
-              <th className="p-3">End Date</th>
-              <th className="p-3 text-right">Actions</th>
+          <thead className="text-xs text-neutral-metallic-silver/70 uppercase tracking-wider">
+            <tr className="border-b border-glass">
+              <th className="p-md">Title</th>
+              <th className="p-md">Type</th>
+              <th className="p-md">Status</th>
+              <th className="p-md">Start Date</th>
+              <th className="p-md">End Date</th>
+              <th className="p-md text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-200">
+          <tbody className="text-white">
             {promotions.map(promo => (
-              <tr key={promo.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-                <td className="p-3 font-medium">{promo.title}</td>
-                <td className="p-3">{promo.promo_type.replace('_', ' ')}</td>
-                <td className="p-3">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${promo.is_active ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
+              <tr key={promo.id} className="border-b border-glass last:border-b-0 hover:bg-white/5 transition-colors">
+                <td className="p-md font-medium">{promo.title}</td>
+                <td className="p-md">{promo.promo_type.replace('_', ' ')}</td>
+                <td className="p-md">
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${promo.is_active ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                     {promo.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="p-3">{new Date(promo.start_date).toLocaleDateString()}</td>
-                <td className="p-3">{new Date(promo.end_date).toLocaleDateString()}</td>
-                <td className="p-3 text-right space-x-2">
-                  <button onClick={() => handleOpenEditModal(promo)} className="text-yellow-400 hover:text-yellow-300 font-semibold">Edit</button>
-                  <button onClick={() => handleDelete(promo.id)} className="text-red-500 hover:text-red-400 font-semibold">Delete</button>
+                <td className="p-md">{new Date(promo.start_date).toLocaleDateString()}</td>
+                <td className="p-md">{new Date(promo.end_date).toLocaleDateString()}</td>
+                <td className="p-md text-right space-x-4">
+                  <button onClick={() => handleOpenEditModal(promo)} className="text-secondary-golden-yellow hover:underline font-semibold">Edit</button>
+                  <button onClick={() => handleDelete(promo.id)} className="text-red-400 hover:underline font-semibold">Delete</button>
                 </td>
               </tr>
             ))}
             {promotions.length === 0 && (
-              <tr><td colSpan={6} className="text-center p-8 text-gray-400">No promotions found.</td></tr>
+              <tr><td colSpan={6} className="text-center p-lg text-neutral-metallic-silver/70">No promotions found.</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-8 w-full max-w-lg shadow-2xl">
-            <h3 className="text-xl font-bold mb-6">{selectedPromotion ? 'Edit Promotion' : 'Create New Promotion'}</h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-primary-deep-blue border border-glass rounded-xl p-lg w-full max-w-lg shadow-2xl">
+            <h3 className="text-h3 font-heading mb-lg">{selectedPromotion ? 'Edit Promotion' : 'Create New Promotion'}</h3>
             <PromotionForm
               promotion={selectedPromotion}
               onSave={handleSave}
