@@ -25,7 +25,7 @@ def create_app():
     app.register_blueprint(stats.bp)
     app.register_blueprint(inventory_bp.bp)
     app.register_blueprint(listings_bp.bp)
-    app.register_blueprint(bids_bp.bp)
+    app.register_blueprint(bids_bp)
     app.register_blueprint(gallery.bp)
     app.register_blueprint(offers_bp.bp)
     app.register_blueprint(admin_offers_bp.bp)
