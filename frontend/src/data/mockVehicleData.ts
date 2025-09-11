@@ -1,3 +1,22 @@
+/*
+* =================================================================
+* INSTRUCTIONS FOR MANUALLY ADDING VEHICLE IMAGES
+* =================================================================
+*
+* Hello! To add the real images for each vehicle, please follow the instructions below.
+*
+* 1.  **File Location**: All your images should be placed inside the `frontend/public/images/` directory. You can create subdirectories if you like (e.g., `frontend/public/images/camry/`).
+*
+* 2.  **Edit the `media` Array**: For each vehicle in the `mockVehicleData` array below, you need to edit the `media` property.
+*
+* 3.  **`media` Array Format**: The `media` array should contain a list of objects. Each object has two properties:
+*     - `url`: The path to the image, starting from the `public` directory. For example, if your image is at `frontend/public/images/my-car.jpg`, the url should be `/images/my-car.jpg`.
+*     - `type`: This should be either `'exterior'` or `'interior'`. This is used to filter the images in the gallery.
+*
+* 4.  **Example**: I have filled out the first vehicle (`Toyota Camry`) with an example structure. You can replace these paths with your real image paths. For the other vehicles, I have left the `media` array empty for you to fill in.
+*
+*/
+
 export interface Vehicle {
   id: string;
   make: string;
@@ -10,19 +29,6 @@ export interface Vehicle {
   media: { url: string; type: 'exterior' | 'interior' }[];
 }
 
-const generateMedia = (make: string, model: string, count: number): { url: string; type: 'exterior' | 'interior' }[] => {
-    const media = [];
-    const modelPath = model.replace(/\s+/g, '-');
-    for (let i = 1; i <= count; i++) {
-        const type = i <= 5 ? 'exterior' : 'interior';
-        media.push({
-            url: `/images/vehicles/${make}_${modelPath}_${i.toString().padStart(2, '0')}_${type}.jpg`,
-            type: type
-        });
-    }
-    return media;
-};
-
 export const mockVehicleData: Vehicle[] = [
   {
     id: 'VIN001',
@@ -33,7 +39,15 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 15000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    media: generateMedia('Toyota', 'Camry', 10),
+    media: [
+      // === EXAMPLE FOR TOYOTA CAMRY ===
+      // Replace these paths with the actual paths to your images.
+      // The first exterior image will be used as the main "hero" image on the list pages.
+      { url: '/images/your_camry_image_1_exterior.jpg', type: 'exterior' },
+      { url: '/images/your_camry_image_2_exterior.jpg', type: 'exterior' },
+      { url: '/images/your_camry_image_3_interior.jpg', type: 'interior' },
+      // ...add as many images as you have for this car.
+    ],
   },
   {
     id: 'VIN002',
@@ -44,7 +58,9 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 25000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    media: generateMedia('Honda', 'CR-V', 10),
+    media: [
+        // TODO: Add media for Honda CR-V
+    ],
   },
   {
     id: 'VIN003',
@@ -55,7 +71,9 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 5000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    media: generateMedia('Ford', 'F-150', 10),
+    media: [
+        // TODO: Add media for Ford F-150
+    ],
   },
   {
     id: 'VIN004',
@@ -66,7 +84,9 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 10000,
     transmission: 'Automatic',
     fuelType: 'Electric',
-    media: generateMedia('Tesla', 'Model-3', 10),
+    media: [
+        // TODO: Add media for Tesla Model 3
+    ],
   },
   {
     id: 'VIN005',
@@ -77,7 +97,9 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 35000,
     transmission: 'Automatic',
     fuelType: 'Hybrid',
-    media: generateMedia('BMW', 'X5', 10),
+    media: [
+        // TODO: Add media for BMW X5
+    ],
   },
   {
     id: 'VIN006',
@@ -88,6 +110,8 @@ export const mockVehicleData: Vehicle[] = [
     mileage: 18000,
     transmission: 'Automatic',
     fuelType: 'Gasoline',
-    media: generateMedia('Audi', 'A4', 10),
+    media: [
+        // TODO: Add media for Audi A4
+    ],
   }
 ];
